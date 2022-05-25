@@ -151,7 +151,7 @@ void Game::RunWorld(bool& restart)
 			cout << "      ";
 		}
 
-		if (shapeList.back()->_y >= ROWS - 4) {
+ 		if (shapeList.back()->_alreadyDown) {
 			shape = new Shape(&wData, COLS/2, 3, FOREGROUND_RED, 1, 1);
 			shapeList.push_back(shape);
 			allGameObjects.push_back(shape);
@@ -222,7 +222,7 @@ void Game::RunWorld(bool& restart)
 
 		DrawInfo();
 
-		Sleep(60);
+		Sleep(100);
 
 		if (score == 1000) {
 			worldIsRun = 0;

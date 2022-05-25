@@ -1,15 +1,44 @@
 #include "Buffer.h"
 
-#define SHAPE_WIDTH 6
-#define SHAPE_HEIGHT 4
+#define SHAPE_WIDTH 4
+#define SHAPE_HEIGHT 3
+#define POSITION 4
 
 class GameObject
 {
 public:
 
-	vector <char16_t> shapeSpritesList;
+	char16_t shapeSprite[1][POSITION][SHAPE_HEIGHT][SHAPE_WIDTH] = { 
+		{
+			{
+			u"#  ",
+			u"#  ",
+			u"#  "
+			},
 
-	int _x, _y, _color, _speed, _type;
+			{
+			u"   ",
+			u"   ",
+			u"###"
+			}, 
+
+			{
+			u"  #",
+			u"  #",
+			u"  #"
+			},
+
+			{
+			u"###",
+			u"   ",
+			u"   "
+			}
+		},
+
+
+	};
+
+	int _x, _y, _color, _speed, _type, _pos = 0;
 
 	GameObject(wd* wData, int x, int y, int color, int speed, int type) {
 		_x = x, _y = y, _color = color, _speed = speed, _type = type;
@@ -34,10 +63,12 @@ protected:
 class Shape : public GameObject {
 public:
 
+	bool _alreadyDown = false;
+
 	Shape(wd* wData, int x, int y, int color, int speed, int type) : GameObject(wData, x, y, color, speed, type) {
-		shapeSpritesList.push_back();
-	
 	};
 
 	void MoveShape();
+
+	void RotateShape();
 };
