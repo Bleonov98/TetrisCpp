@@ -8,20 +8,8 @@ class GameObject
 {
 public:
 
-	char16_t shapeSprite[1][POSITION][SHAPE_HEIGHT][SHAPE_WIDTH] = { 
+	char16_t shapeSprite[5][POSITION][SHAPE_HEIGHT][SHAPE_WIDTH] = { 
 		{
-			{
-			u"#  ",
-			u"#  ",
-			u"#  "
-			},
-
-			{
-			u"   ",
-			u"   ",
-			u"###"
-			}, 
-
 			{
 			u"  #",
 			u"  #",
@@ -32,10 +20,120 @@ public:
 			u"###",
 			u"   ",
 			u"   "
+			}, 
+
+			{
+			u"#  ",
+			u"#  ",
+			u"#  "
+			},
+
+			{
+			u"   ",
+			u"   ",
+			u"###"
 			}
 		},
+		{
+			{
+			u"#  ",
+			u"#  ",
+			u"## "
+			},
 
+			{
+			u"###",
+			u"#  ",
+			u"   "
+			},
 
+			{
+			u" ##",
+			u"  #",
+			u"  #"
+			},
+
+			{
+			u"   ",
+			u"  #",
+			u"###"
+			}
+		},
+		{
+			{
+			u"###",
+			u"###",
+			u"###"
+			},
+
+			{
+			u"###",
+			u"###",
+			u"###"
+			},
+
+			{
+			u"###",
+			u"###",
+			u"###"
+			},
+
+			{
+			u"###",
+			u"###",
+			u"###"
+			},
+		},
+		{
+			{
+			u"   ",
+			u" # ",
+			u"###"
+			},
+
+			{
+			u"#  ",
+			u"## ",
+			u"#  "
+			},
+
+			{
+			u"###",
+			u" # ",
+			u"   "
+			},
+
+			{
+			u"  #",
+			u" ##",
+			u"  #"
+			},
+		},
+		{
+			{
+			u"   ",
+			u" ##",
+			u"## "
+			},
+
+			{
+			u"#  ",
+			u"## ",
+			u" # "
+			},
+
+			{
+			u"   ",
+			u"## ",
+			u" ##"
+			},
+
+			{
+			u"  #",
+			u" ##",
+			u" # "
+			},
+		},
 	};
 
 	int _x, _y, _color, _speed, _type, _pos = 0;
@@ -60,7 +158,8 @@ protected:
 	wd* _wData;
 };
 
-class Shape : public GameObject {
+class Shape : public GameObject 
+{
 public:
 
 	bool _alreadyDown = false;

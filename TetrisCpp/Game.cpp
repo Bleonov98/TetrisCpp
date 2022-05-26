@@ -133,7 +133,7 @@ void Game::RunWorld(bool& restart)
 		{ HotKeys(); }
 	);
 
-	Shape* shape = new Shape(&wData, COLS / 2, 3, FOREGROUND_RED, 1, 1);
+	Shape* shape = new Shape(&wData, COLS / 2, 3, rand() % 7, 1, 1 + rand() % 5);
 	shapeList.push_back(shape);
 	allGameObjects.push_back(shape);
 
@@ -152,25 +152,25 @@ void Game::RunWorld(bool& restart)
 		}
 
  		if (shapeList.back()->_alreadyDown) {
-			shape = new Shape(&wData, COLS/2, 3, FOREGROUND_RED, 1, 1);
+			shape = new Shape(&wData, COLS/2, 3, rand() % 7, 1, 1 + rand() % 5);
 			shapeList.push_back(shape);
 			allGameObjects.push_back(shape);
 		}
 	
-		for (int i = 0; i < shapeList.size() - 1; i++)
+	/*	for (int i = 0; i < shapeList.size() - 1; i++)
 		{
 			for (int height = 0; height < SHAPE_HEIGHT; height++)
 			{
 				for (int width = 0; width < SHAPE_WIDTH; width++)
 				{
 					if ((shapeList.back()->_x + width == shapeList[i]->_x + width) && (shapeList.back()->_y == shapeList[i]->_y)) {
-						shape = new Shape(&wData, COLS / 2, 3, FOREGROUND_RED, 1, 1);
+						shape = new Shape(&wData, COLS / 2, 3, rand() % 7, 1, 1 + rand() % 4);
 						shapeList.push_back(shape);
 						allGameObjects.push_back(shape);
 					}
 				}
 			}
-		}
+		}*/
 
 		shapeList.back()->MoveShape();
 
