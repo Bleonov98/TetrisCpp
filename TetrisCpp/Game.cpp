@@ -141,38 +141,52 @@ void Game::RunWorld(bool& restart)
 	score = 0;
 
 	while (worldIsRun) {
+
 		if (pause) {
-			SetPos(COLS / 2, ROWS / 2);
+
+			SetPos(COLS / 2 - 2, ROWS / 2);
 			cout << "PAUSED";
+
 			while (pause) {
 
 			}
-			SetPos(COLS / 2, ROWS / 2);
+
+			SetPos(COLS / 2 - 2, ROWS / 2);
 			cout << "      ";
+
 		}
 
- 		if (shapeList.back()->_alreadyDown) {
+		shapeList.back()->MoveShape();
+
+ 		if (shapeList.back()->ShapeIsDown()) {
+
 			shape = new Shape(&wData, COLS/2, 3, rand() % 7, 1, 1 + rand() % 5);
 			shapeList.push_back(shape);
 			allGameObjects.push_back(shape);
-		}
-	
-	/*	for (int i = 0; i < shapeList.size() - 1; i++)
-		{
-			for (int height = 0; height < SHAPE_HEIGHT; height++)
-			{
-				for (int width = 0; width < SHAPE_WIDTH; width++)
-				{
-					if ((shapeList.back()->_x + width == shapeList[i]->_x + width) && (shapeList.back()->_y == shapeList[i]->_y)) {
-						shape = new Shape(&wData, COLS / 2, 3, rand() % 7, 1, 1 + rand() % 4);
-						shapeList.push_back(shape);
-						allGameObjects.push_back(shape);
-					}
-				}
-			}
-		}*/
 
-		shapeList.back()->MoveShape();
+			continue;
+		}
+
+
+		for (int i = 0; i < shapeList.size() - 1; i++)
+		{
+			bool finded = false;
+			for (int j = 0; j < shapeList[i]->shapesCoord.size(); j++)
+			{
+				if ((shapeList.back()->shapesCoord.back().first == shapeList[i]->shapesCoord[0].first) &&
+					(shapeList.back()->shapesCoord.back().second == shapeList[i]->shapesCoord[0].second)) {
+
+					shape = new Shape(&wData, COLS / 2, 3, rand() % 7, 1, 1 + rand() % 5);
+					shapeList.push_back(shape);
+					allGameObjects.push_back(shape);
+
+
+					finded = true;
+				}
+				if (finded) break;
+			}	
+			if (finded) break;
+		}
 
 		for (int i = 0; i < allGameObjects.size(); i++)
 		{
@@ -222,7 +236,7 @@ void Game::RunWorld(bool& restart)
 
 		DrawInfo();
 
-		Sleep(100);
+		Sleep(80);
 
 		if (score == 1000) {
 			worldIsRun = 0;

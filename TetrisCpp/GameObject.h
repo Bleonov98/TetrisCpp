@@ -8,7 +8,26 @@ class GameObject
 {
 public:
 
-	char16_t shapeSprite[5][POSITION][SHAPE_HEIGHT][SHAPE_WIDTH] = { 
+	GameObject(wd* wData, int x, int y, int color, int speed, int type) {
+		_x = x, _y = y, _color = color, _speed = speed, _type = type;
+		_wData = wData;
+
+		DrawObject();
+	};
+
+	int GetX();
+	
+	int GetY();
+
+	void SetX(int x);
+
+	void SetY(int y);
+
+	virtual void DrawObject();	
+
+protected:
+
+	char16_t shapeSprite[5][POSITION][SHAPE_HEIGHT][SHAPE_WIDTH] = {
 		{
 			{
 			u"  #",
@@ -20,7 +39,7 @@ public:
 			u"###",
 			u"   ",
 			u"   "
-			}, 
+			},
 
 			{
 			u"#  ",
@@ -136,38 +155,36 @@ public:
 		},
 	};
 
+	wd* _wData;
+
 	int _x, _y, _color, _speed, _type, _pos = 0;
-
-	GameObject(wd* wData, int x, int y, int color, int speed, int type) {
-		_x = x, _y = y, _color = color, _speed = speed, _type = type;
-		_wData = wData;
-
-		DrawObject();
-	};
-
-	virtual void DrawObject();
 
 	void EraseObject();
 
 	virtual ~GameObject() {
 		delete this;
 	};
-
-protected:
-
-	wd* _wData;
 };
 
 class Shape : public GameObject 
 {
-public:
+private:
 
 	bool _alreadyDown = false;
 
+	void RotateShape();
+
+	void FillCoord();
+
+public:
+
+	vector <pair<int, int>> shapesCoord;
+
 	Shape(wd* wData, int x, int y, int color, int speed, int type) : GameObject(wData, x, y, color, speed, type) {
+		DrawObject();
 	};
 
-	void MoveShape();
+	bool ShapeIsDown();
 
-	void RotateShape();
+	void MoveShape();
 };
