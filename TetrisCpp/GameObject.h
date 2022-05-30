@@ -30,15 +30,15 @@ protected:
 	char16_t shapeSprite[5][POSITION][SHAPE_HEIGHT][SHAPE_WIDTH] = {
 		{
 			{
-			u"  #",
-			u"  #",
-			u"  #"
+			u"#  ",
+			u"#  ",
+			u"#  "
 			},
 
 			{
-			u"###",
 			u"   ",
-			u"   "
+			u"   ",
+			u"###"
 			},
 
 			{
@@ -136,9 +136,9 @@ protected:
 			},
 
 			{
-			u"#  ",
-			u"## ",
-			u" # "
+			u" # ",
+			u" ##",
+			u"  #"
 			},
 
 			{
@@ -181,6 +181,7 @@ public:
 	vector <pair<int, int>> shapesCoord;
 
 	Shape(wd* wData, int x, int y, int color, int speed, int type) : GameObject(wData, x, y, color, speed, type) {
+		FillCoord();
 		DrawObject();
 	};
 

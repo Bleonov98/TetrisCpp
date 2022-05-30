@@ -133,7 +133,7 @@ void Game::RunWorld(bool& restart)
 		{ HotKeys(); }
 	);
 
-	Shape* shape = new Shape(&wData, COLS / 2, 3, rand() % 7, 1, 1 + rand() % 5);
+	Shape* shape = new Shape(&wData, 10 + rand() % (COLS - 20), 2, rand() % 7, 1, 1 + rand() % 5);
 	shapeList.push_back(shape);
 	allGameObjects.push_back(shape);
 
@@ -160,31 +160,39 @@ void Game::RunWorld(bool& restart)
 
  		if (shapeList.back()->ShapeIsDown()) {
 
-			shape = new Shape(&wData, COLS/2, 3, rand() % 7, 1, 1 + rand() % 5);
+			shape = new Shape(&wData, 10 + rand() % (COLS - 20), 2, rand() % 7, 1, 1 + rand() % 5);
 			shapeList.push_back(shape);
 			allGameObjects.push_back(shape);
 
 			continue;
 		}
 
-
 		for (int i = 0; i < shapeList.size() - 1; i++)
 		{
 			bool finded = false;
+
 			for (int j = 0; j < shapeList[i]->shapesCoord.size(); j++)
 			{
-				if ((shapeList.back()->shapesCoord.back().first == shapeList[i]->shapesCoord[0].first) &&
-					(shapeList.back()->shapesCoord.back().second == shapeList[i]->shapesCoord[0].second)) {
 
-					shape = new Shape(&wData, COLS / 2, 3, rand() % 7, 1, 1 + rand() % 5);
-					shapeList.push_back(shape);
-					allGameObjects.push_back(shape);
+				for (int size = 0; size < shapeList.back()->shapesCoord.size(); size++)
+				{
+					if ((shapeList[i]->shapesCoord[j].first == shapeList.back()->shapesCoord[size].first) &&
+						(shapeList[i]->shapesCoord[j].second - 1 == shapeList.back()->shapesCoord[size].second)) {
+
+						shape = new Shape(&wData, 10 + rand() % (COLS - 20), 2, rand() % 7, 1, 1 + rand() % 5);
+						shapeList.push_back(shape);
+						allGameObjects.push_back(shape);
 
 
-					finded = true;
+						finded = true;
+
+						if (finded) break;
+					}
 				}
+				
 				if (finded) break;
 			}	
+
 			if (finded) break;
 		}
 

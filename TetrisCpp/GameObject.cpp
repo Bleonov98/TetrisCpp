@@ -48,7 +48,6 @@ bool Shape::ShapeIsDown()
 
 void Shape::MoveShape()
 {
-	FillCoord();
 
 	if (shapesCoord.back().second == ROWS - 1) {
 		_alreadyDown = true;
@@ -76,6 +75,8 @@ void Shape::MoveShape()
 
 		_y += _speed;
 	}
+
+	FillCoord();
 }
 
 void Shape::RotateShape()
