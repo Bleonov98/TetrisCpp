@@ -111,9 +111,9 @@ protected:
 			},
 
 			{
-			u"#  ",
-			u"## ",
-			u"#  "
+			u" # ",
+			u" ##",
+			u" # "
 			},
 
 			{
@@ -185,7 +185,11 @@ public:
 		DrawObject();
 	};
 
+	int GetRight();
+
+	int GetLeft();
+
 	bool ShapeIsDown();
 
-	void MoveShape();
+	void MoveShape(bool collision);
 };

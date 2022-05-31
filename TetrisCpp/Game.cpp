@@ -140,6 +140,8 @@ void Game::RunWorld(bool& restart)
 	level = 0;
 	score = 0;
 
+	bool collision = false;
+
 	while (worldIsRun) {
 
 		if (pause) {
@@ -156,7 +158,9 @@ void Game::RunWorld(bool& restart)
 
 		}
 
-		shapeList.back()->MoveShape();
+		shapeList.back()->MoveShape(collision);
+
+		collision = false;
 
  		if (shapeList.back()->ShapeIsDown()) {
 
@@ -165,6 +169,34 @@ void Game::RunWorld(bool& restart)
 			allGameObjects.push_back(shape);
 
 			continue;
+		}
+
+		// !------------------
+		for (int i = 0; i < shapeList.size() - 1; i++)
+		{
+			bool finded = false;
+
+			for (int j = 0; j < shapeList[i]->shapesCoord.size(); j++) {
+
+
+				for (int size = 0; size < shapeList.back()->shapesCoord.size(); size++)
+				{
+
+					if (
+						((shapeList.back()->shapesCoord[size].first == shapeList[i]->shapesCoord[j].first - 1) &&
+							(shapeList.back()->shapesCoord[size].second == shapeList[i]->shapesCoord[j].second)) ||
+						((shapeList.back()->shapesCoord[size].first == shapeList[i]->shapesCoord[j].first + 1) &&
+							(shapeList.back()->shapesCoord[size].second == shapeList[i]->shapesCoord[j].second)))
+					{
+						collision = true;
+						finded = true;
+					}
+
+					if (finded) break;
+				}
+				if (finded) break;
+			}
+			if (finded) break;
 		}
 
 		for (int i = 0; i < shapeList.size() - 1; i++)
@@ -176,8 +208,8 @@ void Game::RunWorld(bool& restart)
 
 				for (int size = 0; size < shapeList.back()->shapesCoord.size(); size++)
 				{
-					if ((shapeList[i]->shapesCoord[j].first == shapeList.back()->shapesCoord[size].first) &&
-						(shapeList[i]->shapesCoord[j].second - 1 == shapeList.back()->shapesCoord[size].second)) {
+					if ( (shapeList[i]->shapesCoord[j].first == shapeList.back()->shapesCoord[size].first) &&
+						 (shapeList[i]->shapesCoord[j].second - 1 == shapeList.back()->shapesCoord[size].second) ) {
 
 						shape = new Shape(&wData, 10 + rand() % (COLS - 20), 2, rand() % 7, 1, 1 + rand() % 5);
 						shapeList.push_back(shape);
@@ -195,10 +227,24 @@ void Game::RunWorld(bool& restart)
 
 			if (finded) break;
 		}
+		// find collision func
 
 		for (int i = 0; i < allGameObjects.size(); i++)
 		{
 			allGameObjects[i]->DrawObject();
+		}
+		// setNewObjectPos func
+
+		for (int y = 2; y < ROWS - 1; y++)
+		{
+			vector <pair<int, int>> lineErase;
+			for (int x = 3; x < COLS - 6; x++)
+			{
+				if (wData.vBuf[y][x] == u'#') {
+					lineErase.push_back(make_pair(x, y));
+				}
+
+			}
 		}
 
 		for (int y = 0; y < ROWS; y++)

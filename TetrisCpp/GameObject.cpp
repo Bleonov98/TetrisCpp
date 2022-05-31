@@ -46,9 +46,8 @@ bool Shape::ShapeIsDown()
 	return _alreadyDown;
 }
 
-void Shape::MoveShape()
+void Shape::MoveShape(bool collision)
 {
-
 	if (shapesCoord.back().second == ROWS - 1) {
 		_alreadyDown = true;
 	}
@@ -59,18 +58,18 @@ void Shape::MoveShape()
 
 
 		if (GetAsyncKeyState(VK_RIGHT)) {
-			if (_x <= COLS - 5) {
+			if ((GetRight() <= COLS - 3) && (!collision)) {
 				_x += _speed;
 			}
 		}
 		else if (GetAsyncKeyState(VK_LEFT)) {
-			if (_x > 2) {
+			if ((GetLeft() >= 3) && (!collision)) {
 				_x -= _speed;
 			}
 		}
 
 		if (GetAsyncKeyState(VK_SPACE)) {
-			RotateShape();
+			if (GetLeft() >= SHAPE_WIDTH && GetRight() <= COLS - SHAPE_WIDTH) RotateShape();
 		}
 
 		_y += _speed;
@@ -89,6 +88,34 @@ void Shape::RotateShape()
 	}
 }
 
+int Shape::GetRight()
+{
+	int rightX = _x;
+
+	for (int i = 0; i < shapesCoord.size(); i++)
+	{
+		if (shapesCoord[i].first > rightX) {
+			rightX = shapesCoord[i].first;
+		}
+	}
+
+	return rightX;
+}
+
+int Shape::GetLeft()
+{
+	int LeftX = _x;
+
+	for (int i = 0; i < shapesCoord.size(); i++)
+	{
+		if (shapesCoord[i].first < LeftX) {
+			LeftX = shapesCoord[i].first;
+		}
+	}
+
+	return LeftX;
+}
+
 void Shape::FillCoord()
 {
 	shapesCoord.clear();
@@ -102,6 +129,5 @@ void Shape::FillCoord()
 			}
 		}
 	}
-
-
 }
+
