@@ -27,6 +27,36 @@ void Game::DrawInfo()
 	cout << level + 1;
 }
 
+void Game::ClearLine()
+{
+	vector<int> lineCounter(ROWS - 3);
+
+	for (int i = 0; i < ROWS - 3; i++)
+	{
+		lineCounter[i] = 0;
+	}
+
+	for (int y = 2; y < ROWS - 1; y++)
+	{
+		for (int x = 3; x < COLS - 3; x++)
+		{
+			if (wData.vBuf[y][x] != u' ') {
+				lineCounter[y - 2] += 1;
+			}
+		}
+	}
+
+	for (int i = 0; i < ROWS - 3; i++)
+	{
+		if (lineCounter[i] == COLS - 6) {
+			for (int x = 2; x <= COLS - 2; x++)
+			{
+				wData.vBuf[i + 2][x] = u' ';
+			}
+		}
+	}
+}
+
 //void Game::DrawTitle() {
 //
 //	PlaySound(MAKEINTRESOURCE(IDR_WAVE1), NULL, SND_RESOURCE | SND_ASYNC);
@@ -133,7 +163,7 @@ void Game::RunWorld(bool& restart)
 		{ HotKeys(); }
 	);
 
-	Shape* shape = new Shape(&wData, 10 + rand() % (COLS - 20), 2, rand() % 7, 1, 1 + rand() % 5);
+	Shape* shape = new Shape(&wData, 10 + rand() % (COLS - 20), 2, rand() % 7, 1, /*1 + rand() % 5*/3);
 	shapeList.push_back(shape);
 	allGameObjects.push_back(shape);
 
@@ -164,9 +194,11 @@ void Game::RunWorld(bool& restart)
 
  		if (shapeList.back()->ShapeIsDown()) {
 
-			shape = new Shape(&wData, 10 + rand() % (COLS - 20), 2, rand() % 7, 1, 1 + rand() % 5);
+			shape = new Shape(&wData, 10 + rand() % (COLS - 20), 2, rand() % 7, 1, /*1 + rand() % 5*/3);
 			shapeList.push_back(shape);
 			allGameObjects.push_back(shape);
+
+			ClearLine();
 
 			continue;
 		}
@@ -183,10 +215,15 @@ void Game::RunWorld(bool& restart)
 				{
 
 					if (
-						((shapeList.back()->shapesCoord[size].first == shapeList[i]->shapesCoord[j].first - 1) &&
+						( ((shapeList.back()->shapesCoord[size].first == shapeList[i]->shapesCoord[j].first - 1) &&
+							(shapeList.back()->shapesCoord[size].second + 1 == shapeList[i]->shapesCoord[j].second)) ||
+						((shapeList.back()->shapesCoord[size].first == shapeList[i]->shapesCoord[j].first + 1) &&
+							(shapeList.back()->shapesCoord[size].second + 1 == shapeList[i]->shapesCoord[j].second)) ) || 
+						( ((shapeList.back()->shapesCoord[size].first == shapeList[i]->shapesCoord[j].first - 1) &&
 							(shapeList.back()->shapesCoord[size].second == shapeList[i]->shapesCoord[j].second)) ||
 						((shapeList.back()->shapesCoord[size].first == shapeList[i]->shapesCoord[j].first + 1) &&
-							(shapeList.back()->shapesCoord[size].second == shapeList[i]->shapesCoord[j].second)))
+							(shapeList.back()->shapesCoord[size].second == shapeList[i]->shapesCoord[j].second)) )
+						)
 					{
 						collision = true;
 						finded = true;
@@ -211,10 +248,11 @@ void Game::RunWorld(bool& restart)
 					if ( (shapeList[i]->shapesCoord[j].first == shapeList.back()->shapesCoord[size].first) &&
 						 (shapeList[i]->shapesCoord[j].second - 1 == shapeList.back()->shapesCoord[size].second) ) {
 
-						shape = new Shape(&wData, 10 + rand() % (COLS - 20), 2, rand() % 7, 1, 1 + rand() % 5);
+						shape = new Shape(&wData, 10 + rand() % (COLS - 20), 2, rand() % 7, 1, 3);
 						shapeList.push_back(shape);
 						allGameObjects.push_back(shape);
 
+						ClearLine();
 
 						finded = true;
 
@@ -234,18 +272,6 @@ void Game::RunWorld(bool& restart)
 			allGameObjects[i]->DrawObject();
 		}
 		// setNewObjectPos func
-
-		for (int y = 2; y < ROWS - 1; y++)
-		{
-			vector <pair<int, int>> lineErase;
-			for (int x = 3; x < COLS - 6; x++)
-			{
-				if (wData.vBuf[y][x] == u'#') {
-					lineErase.push_back(make_pair(x, y));
-				}
-
-			}
-		}
 
 		for (int y = 0; y < ROWS; y++)
 		{

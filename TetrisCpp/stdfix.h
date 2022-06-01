@@ -11,6 +11,8 @@
 #include <stdio.h>
 #include <conio.h>
 #include <windows.h>
+#include <numeric>
+#include <algorithm>
 
 #include <mmsystem.h>
 #pragma comment(lib, "winmm.lib")
