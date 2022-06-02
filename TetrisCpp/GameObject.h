@@ -170,6 +170,8 @@ class Shape : public GameObject
 {
 private:
 
+	int tick, speedY = 5;
+
 	bool _alreadyDown = false;
 
 	void RotateShape();

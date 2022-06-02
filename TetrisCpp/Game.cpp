@@ -27,11 +27,11 @@ void Game::DrawInfo()
 	cout << level + 1;
 }
 
-void Game::ClearLine()
+void Game::ClearLine(bool clearLine)
 {
-	vector<int> lineCounter(ROWS - 3);
+	vector<int> lineCounter(ROWS - 1);
 
-	for (int i = 0; i < ROWS - 3; i++)
+	for (int i = 0; i < ROWS - 1; i++)
 	{
 		lineCounter[i] = 0;
 	}
@@ -40,21 +40,23 @@ void Game::ClearLine()
 	{
 		for (int x = 3; x < COLS - 3; x++)
 		{
-			if (wData.vBuf[y][x] != u' ') {
-				lineCounter[y - 2] += 1;
+			if ((wData.vBuf[y][x] != u' ') && (wData.vBuf[y][x] != 0)) {
+				lineCounter[y]++;
 			}
 		}
 	}
 
-	for (int i = 0; i < ROWS - 3; i++)
+	for (int i = 0; i < lineCounter.size(); i++)
 	{
-		if (lineCounter[i] == COLS - 6) {
+		if (lineCounter[i] >= COLS - 6) {
 			for (int x = 2; x <= COLS - 2; x++)
 			{
-				wData.vBuf[i + 2][x] = u' ';
+				wData.vBuf[i][x];
 			}
 		}
 	}
+
+	clearLine = false;
 }
 
 //void Game::DrawTitle() {
@@ -171,6 +173,7 @@ void Game::RunWorld(bool& restart)
 	score = 0;
 
 	bool collision = false;
+	bool clearLine = false;
 
 	while (worldIsRun) {
 
@@ -198,7 +201,7 @@ void Game::RunWorld(bool& restart)
 			shapeList.push_back(shape);
 			allGameObjects.push_back(shape);
 
-			ClearLine();
+			clearLine = true;
 
 			continue;
 		}
@@ -252,9 +255,8 @@ void Game::RunWorld(bool& restart)
 						shapeList.push_back(shape);
 						allGameObjects.push_back(shape);
 
-						ClearLine();
-
 						finded = true;
+						clearLine = true;
 
 						if (finded) break;
 					}
@@ -272,6 +274,10 @@ void Game::RunWorld(bool& restart)
 			allGameObjects[i]->DrawObject();
 		}
 		// setNewObjectPos func
+
+		if (clearLine) {
+			ClearLine(clearLine);
+		}
 
 		for (int y = 0; y < ROWS; y++)
 		{
@@ -316,14 +322,12 @@ void Game::RunWorld(bool& restart)
 
 		DrawInfo();
 
-		Sleep(80);
+		Sleep(40);
 
 		if (score == 1000) {
 			worldIsRun = 0;
 		}
 
 	}
-
-
 
 }

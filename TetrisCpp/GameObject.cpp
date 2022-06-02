@@ -35,7 +35,7 @@ void GameObject::EraseObject()
 		for (int j = 0; j < SHAPE_WIDTH - 1; j++)
 		{
 			if (shapeSprite[_type - 1][_pos][i][j] != u' ') {
-				_wData->vBuf[_y + i][_x + j] = ' ';
+				_wData->vBuf[_y + i][_x + j] = u' ';
 			}
 		}
 	}
@@ -49,7 +49,7 @@ bool Shape::ShapeIsDown()
 void Shape::MoveShape(bool collision)
 {
 	if (shapesCoord.back().second == ROWS - 1) {
-		_alreadyDown = true;
+			_alreadyDown = true;
 	}
 
 	if (!_alreadyDown) {
@@ -72,10 +72,19 @@ void Shape::MoveShape(bool collision)
 			if (GetLeft() >= SHAPE_WIDTH && GetRight() <= COLS - SHAPE_WIDTH) RotateShape();
 		}
 
-		_y += _speed;
+		if (GetAsyncKeyState(VK_DOWN) & 0x8000) {
+			speedY = 1;
+		}
+		else speedY = 5;
+
+		if (tick % speedY == 0) {
+			_y += _speed;
+		}
 	}
 
 	FillCoord();
+
+	tick++;
 }
 
 void Shape::RotateShape()
