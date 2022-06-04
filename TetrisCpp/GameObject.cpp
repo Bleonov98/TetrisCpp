@@ -46,10 +46,14 @@ bool Shape::ShapeIsDown()
 	return _alreadyDown;
 }
 
-void Shape::MoveShape(bool collision)
+void Shape::MoveShape(bool collisionLeft, bool collisionRight)
 {
 	if (shapesCoord.back().second == ROWS - 1) {
 			_alreadyDown = true;
+	}
+
+	if (collisionBot) {
+		_alreadyDown = true;
 	}
 
 	if (!_alreadyDown) {
@@ -58,12 +62,12 @@ void Shape::MoveShape(bool collision)
 
 
 		if (GetAsyncKeyState(VK_RIGHT)) {
-			if ((GetRight() <= COLS - 3) && (!collision)) {
+			if ((GetRight() <= COLS - 3) && (!collisionRight)) {
 				_x += _speed;
 			}
 		}
 		else if (GetAsyncKeyState(VK_LEFT)) {
-			if ((GetLeft() >= 3) && (!collision)) {
+			if ((GetLeft() >= 3) && (!collisionLeft)) {
 				_x -= _speed;
 			}
 		}
@@ -140,3 +144,17 @@ void Shape::FillCoord()
 	}
 }
 
+void Shape::DeleteCoord()
+{
+	for (int i = 0; i < shapesCoord.size(); i++)
+	{
+		if (_wData->vBuf[shapesCoord[i].second][shapesCoord[i].first] == u' ') {
+			shapesCoord.erase(shapesCoord.begin() + i);
+		}
+
+		if (shapesCoord.size() == 0)
+		{
+			deleteShape = true;
+		}
+	}
+}

@@ -180,6 +180,10 @@ private:
 
 public:
 
+	bool deleteShape;
+
+	bool collisionBot = false;
+
 	vector <pair<int, int>> shapesCoord;
 
 	Shape(wd* wData, int x, int y, int color, int speed, int type) : GameObject(wData, x, y, color, speed, type) {
@@ -193,5 +197,7 @@ public:
 
 	bool ShapeIsDown();
 
-	void MoveShape(bool collision);
+	void MoveShape(bool collisionLeft, bool collisionRight);
+
+	void DeleteCoord();
 };
