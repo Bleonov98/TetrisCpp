@@ -124,6 +124,6 @@ public:
 
     void DrawInfo();
 
-    void ClearLine(bool clearLine);
+    void ClearLine();
 };
 

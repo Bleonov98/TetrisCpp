@@ -27,7 +27,7 @@ void Game::DrawInfo()
 	cout << level + 1;
 }
 
-void Game::ClearLine(bool clearLine)
+void Game::ClearLine()
 {
 	vector<int> lineCounter(ROWS);
 
@@ -62,8 +62,6 @@ void Game::ClearLine(bool clearLine)
 			}
 		}
 	}
-	
-	clearLine = false;
 }
 
 //void Game::DrawTitle() {
@@ -203,6 +201,7 @@ void Game::RunWorld(bool& restart)
 		for (int i = 0; i < shapeList.size(); i++)
 		{
 			if (!shapeList[i]->collisionBot) {
+
 				shapeList[i]->MoveShape(collisionLeft, collisionRight);
 			}
 		}
@@ -298,7 +297,9 @@ void Game::RunWorld(bool& restart)
 		// setNewObjectPos func
 
 		if (clearLine) {
-			ClearLine(clearLine);
+			ClearLine();
+
+			clearLine = false;
 		}
 
 		for (int y = 0; y < ROWS; y++)

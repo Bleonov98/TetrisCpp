@@ -148,13 +148,13 @@ void Shape::DeleteCoord()
 {
 	for (int i = 0; i < shapesCoord.size(); i++)
 	{
-		if (_wData->vBuf[shapesCoord[i].second][shapesCoord[i].first] == u' ') {
+		if (_wData->vBuf[shapesCoord[i].second][shapesCoord[i].first] != u'#') {
 			shapesCoord.erase(shapesCoord.begin() + i);
 		}
+	}
 
-		if (shapesCoord.size() == 0)
-		{
-			deleteShape = true;
-		}
+	if (shapesCoord.size() == 0)
+	{
+		deleteShape = true;
 	}
 }
