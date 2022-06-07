@@ -16,28 +16,19 @@ void GameObject::SetY(int y) {
 	_y = y;
 }
 
-void GameObject::DrawObject() {
-	for (int i = 0; i < SHAPE_HEIGHT; i++)
+void GameObject::DrawObject() 
+{
+	for (int i = 0; i < shapesCoord.size(); i++)
 	{
-		for (int j = 0; j < SHAPE_WIDTH - 1; j++)
-		{
-			if (shapeSprite[_type - 1][_pos][i][j] != u' ') {
-				_wData->vBuf[_y + i][_x + j] = shapeSprite[_type - 1][_pos][i][j] | (_color << 8);
-			}
-		}
+		_wData->vBuf[shapesCoord[i].second][shapesCoord[i].first] = u'#' | (_color << 8);
 	}
 }
 
 void GameObject::EraseObject()
- {
-	for (int i = 0; i < SHAPE_HEIGHT; i++)
+{
+	for (int i = 0; i < shapesCoord.size(); i++)
 	{
-		for (int j = 0; j < SHAPE_WIDTH - 1; j++)
-		{
-			if (shapeSprite[_type - 1][_pos][i][j] != u' ') {
-				_wData->vBuf[_y + i][_x + j] = u' ';
-			}
-		}
+		_wData->vBuf[shapesCoord[i].second][shapesCoord[i].first] = u' ';
 	}
 }
 
@@ -84,9 +75,11 @@ void Shape::MoveShape(bool collisionLeft, bool collisionRight)
 		if (tick % speedY == 0) {
 			_y += _speed;
 		}
+
+		FillCoord();
 	}
 
-	FillCoord();
+	
 
 	tick++;
 }

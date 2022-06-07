@@ -23,7 +23,11 @@ public:
 
 	void SetY(int y);
 
-	virtual void DrawObject();	
+	virtual void DrawObject();
+
+	bool deleteShape = false;
+
+	vector <pair<int, int>> shapesCoord;
 
 protected:
 
@@ -180,11 +184,7 @@ private:
 
 public:
 
-	bool deleteShape;
-
 	bool collisionBot = false;
-
-	vector <pair<int, int>> shapesCoord;
 
 	Shape(wd* wData, int x, int y, int color, int speed, int type) : GameObject(wData, x, y, color, speed, type) {
 		FillCoord();
