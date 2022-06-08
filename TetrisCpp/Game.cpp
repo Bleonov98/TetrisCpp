@@ -56,11 +56,27 @@ void Game::ClearLine()
 			for (int shape = 0; shape < shapeList.size(); shape++)
 			{
 				shapeList[shape]->DeleteCoord();
-				if (shapeList[shape]->deleteShape) {
-					shapeList.erase(shapeList.begin() + shape);
-				}
 			}
 		}
+	}
+
+	bool restart = true;
+
+	for (int shape = 0; shape < shapeList.size();)
+	{
+		if (restart) shape = 0;
+		else shape++;
+
+		if (shape == shapeList.size()) break;
+
+		if (shapeList[shape]->deleteShape) {
+			shapeList.erase(shapeList.begin() + shape);
+			allGameObjects.erase(allGameObjects.begin() + shape);
+
+			restart = true;
+		}
+
+		else restart = false;
 	}
 }
 
@@ -289,6 +305,13 @@ void Game::RunWorld(bool& restart)
 			if (finded) break;
 		}
 		// find collision func
+
+		for (int i = 0; i < allGameObjects.size(); i++)
+		{
+			if (allGameObjects[i]->deleteShape) {
+				allGameObjects.erase(allGameObjects.begin() + i);
+			}
+		}
 
 		for (int i = 0; i < allGameObjects.size(); i++)
 		{

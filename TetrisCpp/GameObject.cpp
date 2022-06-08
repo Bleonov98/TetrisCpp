@@ -40,7 +40,7 @@ bool Shape::ShapeIsDown()
 void Shape::MoveShape(bool collisionLeft, bool collisionRight)
 {
 	if (shapesCoord.back().second == ROWS - 1) {
-			_alreadyDown = true;
+		_alreadyDown = true;
 	}
 
 	if (collisionBot) {
@@ -139,11 +139,21 @@ void Shape::FillCoord()
 
 void Shape::DeleteCoord()
 {
-	for (int i = 0; i < shapesCoord.size(); i++)
+	bool restart = true;
+
+	for (int i = 0; i < shapesCoord.size();)
 	{
-		if (_wData->vBuf[shapesCoord[i].second][shapesCoord[i].first] != u'#') {
+		if (restart) i = 0;
+		else i++;
+
+		if (i == shapesCoord.size()) break;
+		
+		if (_wData->vBuf[shapesCoord[i].second][shapesCoord[i].first] == u' ') {
 			shapesCoord.erase(shapesCoord.begin() + i);
+
+			restart = true;
 		}
+		else restart = false;
 	}
 
 	if (shapesCoord.size() == 0)
