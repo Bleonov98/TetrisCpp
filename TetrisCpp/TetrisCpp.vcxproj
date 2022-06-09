@@ -155,6 +155,10 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\TetrisArea.txt" />
+    <Text Include="TetrisArea.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="..\Tetris.wav" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

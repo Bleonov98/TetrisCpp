@@ -112,15 +112,21 @@ public:
 
     void SetPos(int x, int y);
 
-    void DrawTitle();
-
     void DrawArea();
 
     void CreateWorld();
 
     void RunWorld(bool& restart);
 
+    void Collision(Shape *shape, bool &clearLine, bool &collisionRight, bool &collisionLeft);
+
+    void DrawToMem();
+
     void HotKeys();
+
+    bool GameOver();
+
+    void DrawEndInfo(bool &restart);
 
     void DrawInfo();
 

@@ -49,5 +49,11 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\TetrisArea.txt" />
+    <Text Include="TetrisArea.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="..\Tetris.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
   </ItemGroup>
 </Project>

@@ -25,6 +25,8 @@ public:
 
 	virtual void DrawObject();
 
+	void EraseObject();
+
 	bool deleteShape = false;
 
 	vector <pair<int, int>> shapesCoord;
@@ -163,8 +165,6 @@ protected:
 
 	int _x, _y, _color, _speed, _type, _pos = 0;
 
-	void EraseObject();
-
 	virtual ~GameObject() {
 		delete this;
 	};
@@ -174,7 +174,7 @@ class Shape : public GameObject
 {
 private:
 
-	int tick, speedY = 5;
+	int tick, speedY = 6;
 
 	bool _alreadyDown = false;
 
@@ -197,7 +197,7 @@ public:
 
 	bool ShapeIsDown();
 
-	void MoveShape(bool collisionLeft, bool collisionRight);
+	void MoveShape(bool collisionLeft, bool collisionRight, int lvl);
 
 	void DeleteCoord();
 };

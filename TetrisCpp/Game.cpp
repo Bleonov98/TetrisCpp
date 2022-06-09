@@ -19,17 +19,72 @@ void Game::HotKeys()
 	}
 }
 
+bool Game::GameOver()
+{
+	if ((score % 260 == 0) && (score > 0)) {
+		if (level <= 4) {
+			level++;
+			score += 20;
+		}
+	}
+	if (level == 5) worldIsRun = false;
+
+	for (int shape = 0; shape < shapeList.size(); shape++)
+	{
+		if ((shapeList[shape]->ShapeIsDown()) && (shapeList[shape]->GetY() <= 10)) {
+			worldIsRun = false;
+		}
+	}
+
+	return worldIsRun;
+}
+
+void Game::DrawEndInfo(bool &restart)
+{
+	if (level == 5) {
+		SetPos(19, 22);
+		cout << "CONGRATULATIONS! YOU WIN";
+	}
+	else {
+		SetPos(22, 22);
+		cout << "GAME OVER!";
+		SetPos(24, 25);
+		cout << "LEVEL: " << level + 1 << "/5";
+	}
+	SetPos(25, 24);
+	cout << "SCORE: " << score;
+	SetPos(20, 27);
+	cout << "PRESS ENTER TO RESTART";
+	SetPos(22, 28);
+	cout << "PRESS ESC TO EXIT";
+
+	pressed = false;
+	restart = false;
+
+	while (!pressed) {
+		if (GetAsyncKeyState(VK_RETURN)) {
+			restart = true;
+			pressed = true;
+		}
+		else if (GetAsyncKeyState(VK_ESCAPE)) {
+			restart = false;
+			pressed = true;
+		}
+	}
+}
+
 void Game::DrawInfo()
 {
-	SetPos(17, 52);
+	SetPos(8, 52);
 	cout << score;
-	SetPos(17, 53);
+	SetPos(8, 53);
 	cout << level + 1;
 }
 
 void Game::ClearLine()
 {
 	vector<int> lineCounter(ROWS);
+	int lineCnt = 0;
 
 	for (int i = 0; i < ROWS; i++)
 	{
@@ -49,6 +104,7 @@ void Game::ClearLine()
 	for (int i = 0; i < lineCounter.size(); i++)
 	{
 		if (lineCounter[i] >= COLS - 6) {
+			lineCnt++;
 			for (int x = 2; x <= COLS - 2; x++)
 			{
 				wData.vBuf[i][x] = u' ';
@@ -60,75 +116,144 @@ void Game::ClearLine()
 		}
 	}
 
-	bool restart = true;
+	if (lineCnt > 0) {
 
-	for (int shape = 0; shape < shapeList.size();)
-	{
-		if (restart) shape = 0;
-		else shape++;
+		bool restart = true;
 
-		if (shape == shapeList.size()) break;
+		for (int shape = 0; shape < shapeList.size();)
+		{
+			if (restart) shape = 0;
+			else shape++;
 
-		if (shapeList[shape]->deleteShape) {
-			shapeList.erase(shapeList.begin() + shape);
-			allGameObjects.erase(allGameObjects.begin() + shape);
+			if (shape == shapeList.size()) break;
 
-			restart = true;
+			if (shapeList[shape]->deleteShape) {
+				shapeList.erase(shapeList.begin() + shape);
+				allGameObjects.erase(allGameObjects.begin() + shape);
+
+				restart = true;
+			}
+
+			else restart = false;
 		}
 
-		else restart = false;
+		for (int i = 0; i < lineCnt; i++)
+		{
+			for (int shape = 0; shape < shapeList.size(); shape++)
+			{
+				for (int coord = 0; coord < shapeList[shape]->shapesCoord.size(); coord++)
+				{
+					if ((wData.vBuf[shapeList[shape]->shapesCoord[coord].first][shapeList[shape]->shapesCoord[coord].second + 1] == u' ') ||
+						(wData.vBuf[shapeList[shape]->shapesCoord[coord].first][shapeList[shape]->shapesCoord[coord].second + 1] == 0)) {
+						shapeList[shape]->EraseObject();
+						shapeList[shape]->shapesCoord[coord].second++;
+					}
+				}
+			}
+			score += 20;
+		}
+
+	}
+	
+}
+
+void Game::Collision(Shape* shape, bool& clearLine, bool& collisionRight, bool& collisionLeft)
+{
+	if (shapeList.back()->ShapeIsDown()) {
+
+		shape = new Shape(&wData, 10 + rand() % (COLS - 20), 2, rand() % 7, 1, 1 + rand() % 5);
+		shapeList.push_back(shape);
+		allGameObjects.push_back(shape);
+
+		clearLine = true;
+
+		return;
+	}
+
+	// !------------------
+	for (int i = 0; i < shapeList.size() - 1; i++)
+	{
+		bool finded = false;
+
+		for (int j = 0; j < shapeList[i]->shapesCoord.size(); j++) {
+
+
+			for (int size = 0; size < shapeList.back()->shapesCoord.size(); size++)
+			{
+
+				if (
+					(((shapeList.back()->shapesCoord[size].first == shapeList[i]->shapesCoord[j].first - 1) &&
+						(shapeList.back()->shapesCoord[size].second + 1 == shapeList[i]->shapesCoord[j].second)) ||
+						((shapeList.back()->shapesCoord[size].first == shapeList[i]->shapesCoord[j].first - 1) &&
+							(shapeList.back()->shapesCoord[size].second == shapeList[i]->shapesCoord[j].second)))
+					)
+				{
+					collisionRight = true;
+					finded = true;
+				}
+
+				if (((shapeList.back()->shapesCoord[size].first == shapeList[i]->shapesCoord[j].first + 1) &&
+					(shapeList.back()->shapesCoord[size].second + 1 == shapeList[i]->shapesCoord[j].second)) ||
+					((shapeList.back()->shapesCoord[size].first == shapeList[i]->shapesCoord[j].first + 1) &&
+						(shapeList.back()->shapesCoord[size].second == shapeList[i]->shapesCoord[j].second)))
+				{
+					collisionLeft = true;
+					finded = true;
+				}
+
+				if (finded) break;
+			}
+			if (finded) break;
+		}
+		if (finded) break;
+	}
+
+	for (int i = 0; i < shapeList.size() - 1; i++)
+	{
+		bool finded = false;
+
+		for (int j = 0; j < shapeList[i]->shapesCoord.size(); j++)
+		{
+
+			for (int size = 0; size < shapeList.back()->shapesCoord.size(); size++)
+			{
+				if ((shapeList[i]->shapesCoord[j].first == shapeList.back()->shapesCoord[size].first) &&
+					(shapeList[i]->shapesCoord[j].second - 1 == shapeList.back()->shapesCoord[size].second)) {
+
+					shapeList.back()->collisionBot = true;
+
+					shape = new Shape(&wData, 10 + rand() % (COLS - 20), 2, rand() % 7, 1, 1 + rand() % 5);
+					shapeList.push_back(shape);
+					allGameObjects.push_back(shape);
+
+					finded = true;
+					clearLine = true;
+
+					if (finded) break;
+				}
+			}
+
+			if (finded) break;
+		}
+
+		if (finded) break;
 	}
 }
 
-//void Game::DrawTitle() {
-//
-//	PlaySound(MAKEINTRESOURCE(IDR_WAVE1), NULL, SND_RESOURCE | SND_ASYNC);
-//
-//	HRSRC hResource = FindResource(hInstance, MAKEINTRESOURCE(IDR_TEXT2), L"TEXT");
-//
-//	if (hResource)
-//	{
-//		HGLOBAL hLoadedResource = LoadResource(hInstance, hResource);
-//
-//		if (hLoadedResource)
-//		{
-//			LPCSTR title = (LPCSTR)LockResource(hLoadedResource);
-//
-//			if (title)
-//			{
-//				DWORD dwResourceSize = SizeofResource(hInstance, hResource);
-//
-//				if (0 != dwResourceSize)
-//				{
-//					int j = 0;
-//					int k = 1;
-//					for (int i = 0; i < 55; i++)
-//					{
-//						for (; j < 150.95 * k; j++)
-//						{
-//							cout << title[j];
-//						}
-//						k++;
-//						Sleep(20);
-//					}
-//				}
-//			}
-//		}
-//	}
-//
-//	while (!GetAsyncKeyState(VK_RETURN)) {
-//		SetPos(67, 42);
-//		cout << "PRESS ENTER TO START";
-//		Sleep(650);
-//		SetPos(67, 42);
-//		cout << "                    ";
-//		Sleep(650);
-//	}
-//
-//	PlaySound(NULL, 0, 0);
-//
-//	system("cls");
-//}
+void Game::DrawToMem()
+{
+	for (int i = 0; i < allGameObjects.size(); i++)
+	{
+		if (allGameObjects[i]->deleteShape) {
+			allGameObjects.erase(allGameObjects.begin() + i);
+		}
+	}
+
+	for (int i = 0; i < allGameObjects.size(); i++)
+	{
+		allGameObjects[i]->DrawObject();
+	}
+}
 
 void Game::DrawArea()
 {
@@ -186,7 +311,9 @@ void Game::RunWorld(bool& restart)
 		{ HotKeys(); }
 	);
 
-	Shape* shape = new Shape(&wData, 10 + rand() % (COLS - 20), 2, rand() % 7, 1, /*1 + rand() % 5*/3);
+	PlaySound(MAKEINTRESOURCE(IDR_WAVE1), NULL, SND_RESOURCE | SND_ASYNC);
+
+	Shape* shape = new Shape(&wData, 10 + rand() % (COLS - 20), 2, rand() % 7, 1, 1 + rand() % 5);
 	shapeList.push_back(shape);
 	allGameObjects.push_back(shape);
 
@@ -218,106 +345,17 @@ void Game::RunWorld(bool& restart)
 		{
 			if (!shapeList[i]->collisionBot) {
 
-				shapeList[i]->MoveShape(collisionLeft, collisionRight);
+				shapeList[i]->MoveShape(collisionLeft, collisionRight, level);
 			}
 		}
+		// -> MoveShape function
 
 		collisionRight = false;
 		collisionLeft = false;
 
- 		if (shapeList.back()->ShapeIsDown()) {
+		Collision(shape, clearLine, collisionRight, collisionLeft);
 
-			shape = new Shape(&wData, 10 + rand() % (COLS - 20), 2, rand() % 7, 1, /*1 + rand() % 5*/3);
-			shapeList.push_back(shape);
-			allGameObjects.push_back(shape);
-
-			clearLine = true;
-
-			continue;
-		}
-
-		// !------------------
-		for (int i = 0; i < shapeList.size() - 1; i++)
-		{
-			bool finded = false;
-
-			for (int j = 0; j < shapeList[i]->shapesCoord.size(); j++) {
-
-
-				for (int size = 0; size < shapeList.back()->shapesCoord.size(); size++)
-				{
-
-					if (
-						(((shapeList.back()->shapesCoord[size].first == shapeList[i]->shapesCoord[j].first - 1) &&
-							(shapeList.back()->shapesCoord[size].second + 1 == shapeList[i]->shapesCoord[j].second)) ||
-							((shapeList.back()->shapesCoord[size].first == shapeList[i]->shapesCoord[j].first - 1) &&
-								(shapeList.back()->shapesCoord[size].second == shapeList[i]->shapesCoord[j].second)))
-						)
-					{
-						collisionRight = true;
-						finded = true;
-					}
-
-					if ( ((shapeList.back()->shapesCoord[size].first == shapeList[i]->shapesCoord[j].first + 1) &&
-						(shapeList.back()->shapesCoord[size].second + 1 == shapeList[i]->shapesCoord[j].second)) ||
-						((shapeList.back()->shapesCoord[size].first == shapeList[i]->shapesCoord[j].first + 1) &&
-							(shapeList.back()->shapesCoord[size].second == shapeList[i]->shapesCoord[j].second)))
-					{
-						collisionLeft = true;
-						finded = true;
-					}
-
-					if (finded) break;
-				}
-				if (finded) break;
-			}
-			if (finded) break;
-		}
-
-		for (int i = 0; i < shapeList.size() - 1; i++)
-		{
-			bool finded = false;
-
-			for (int j = 0; j < shapeList[i]->shapesCoord.size(); j++)
-			{
-
-				for (int size = 0; size < shapeList.back()->shapesCoord.size(); size++)
-				{
-					if ( (shapeList[i]->shapesCoord[j].first == shapeList.back()->shapesCoord[size].first) &&
-						 (shapeList[i]->shapesCoord[j].second - 1 == shapeList.back()->shapesCoord[size].second) ) {
-
-						shapeList.back()->collisionBot = true;
-
-						shape = new Shape(&wData, 10 + rand() % (COLS - 20), 2, rand() % 7, 1, 3);
-						shapeList.push_back(shape);
-						allGameObjects.push_back(shape);
-
-						finded = true;
-						clearLine = true;
-
-						if (finded) break;
-					}
-				}
-				
-				if (finded) break;
-			}	
-
-			if (finded) break;
-		}
-		// find collision func
-
-		for (int i = 0; i < allGameObjects.size(); i++)
-		{
-			if (allGameObjects[i]->deleteShape) {
-				allGameObjects.erase(allGameObjects.begin() + i);
-			}
-		}
-
-		for (int i = 0; i < allGameObjects.size(); i++)
-		{
-			allGameObjects[i]->DrawObject();
-		}
-		// setNewObjectPos func
+		DrawToMem();
 
 		if (clearLine) {
 			ClearLine();
@@ -370,10 +408,13 @@ void Game::RunWorld(bool& restart)
 
 		Sleep(40);
 
-		if (score == 1000) {
-			worldIsRun = 0;
-		}
-
+		GameOver();
 	}
 
+	DrawEndInfo(restart);
+
+	hotKeys.join();
+
+	printf(CSI "?1049l");
 }
+

@@ -37,7 +37,7 @@ bool Shape::ShapeIsDown()
 	return _alreadyDown;
 }
 
-void Shape::MoveShape(bool collisionLeft, bool collisionRight)
+void Shape::MoveShape(bool collisionLeft, bool collisionRight, int lvl)
 {
 	if (shapesCoord.back().second == ROWS - 1) {
 		_alreadyDown = true;
@@ -51,7 +51,6 @@ void Shape::MoveShape(bool collisionLeft, bool collisionRight)
 
 		EraseObject();
 
-
 		if (GetAsyncKeyState(VK_RIGHT)) {
 			if ((GetRight() <= COLS - 3) && (!collisionRight)) {
 				_x += _speed;
@@ -63,14 +62,22 @@ void Shape::MoveShape(bool collisionLeft, bool collisionRight)
 			}
 		}
 
-		if (GetAsyncKeyState(VK_SPACE)) {
-			if (GetLeft() >= SHAPE_WIDTH && GetRight() <= COLS - SHAPE_WIDTH) RotateShape();
+		if (tick % 3 == 0) {
+			if (GetAsyncKeyState(VK_SPACE)) {
+				if (GetLeft() >= SHAPE_WIDTH && GetRight() <= COLS - SHAPE_WIDTH) RotateShape();
+			}
 		}
+
 
 		if (GetAsyncKeyState(VK_DOWN) & 0x8000) {
 			speedY = 1;
 		}
-		else speedY = 5;
+		else {
+			speedY = 6;
+			if (lvl >= 3) {
+				speedY = 3;
+			}
+		}
 
 		if (tick % speedY == 0) {
 			_y += _speed;
@@ -110,7 +117,7 @@ int Shape::GetRight()
 
 int Shape::GetLeft()
 {
-	int LeftX = _x;
+	int LeftX = shapesCoord.front().first;
 
 	for (int i = 0; i < shapesCoord.size(); i++)
 	{

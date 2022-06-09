@@ -60,7 +60,15 @@ LANGUAGE LANG_UKRAINIAN, SUBLANG_DEFAULT
 // TEXT
 //
 
-IDR_TEXT1               TEXT                    "C:\\Users\\Borys\\source\\repos\\TetrisCpp\\TetrisArea.txt"
+IDR_TEXT1               TEXT                    "..\\TetrisArea.txt"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// WAVE
+//
+
+IDR_WAVE1               WAVE                    "..\\Tetris.wav"
 
 #endif    // Ukrainian (Ukraine) resources
 /////////////////////////////////////////////////////////////////////////////
