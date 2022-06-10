@@ -6,16 +6,17 @@ void Game::SetPos(int x, int y)
 	printf(coord);
 }
 
-void Game::HotKeys()
+void Game::HotKeys(bool &pause)
 {
 	while (worldIsRun) {
 		if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
 			worldIsRun = false;
 		}
-		if (GetKeyState(0x50)) {
+		else if (GetAsyncKeyState(0x50) & 0x8000) {
 			pause = !pause;
+
+			this_thread::sleep_for(milliseconds(1000));
 		}
-		this_thread::sleep_for(milliseconds(10));
 	}
 }
 
@@ -93,7 +94,7 @@ void Game::ClearLine()
 
 	for (int y = 2; y < ROWS; y++)
 	{
-		for (int x = 3; x < COLS - 3; x++)
+		for (int x = 2; x <= COLS - 2; x++)
 		{
 			if ((wData.vBuf[y][x] != u' ') && (wData.vBuf[y][x] != 0)) {
 				lineCounter[y]++;
@@ -103,7 +104,7 @@ void Game::ClearLine()
 
 	for (int i = 0; i < lineCounter.size(); i++)
 	{
-		if (lineCounter[i] >= COLS - 6) {
+		if (lineCounter[i] >= COLS - 3) {
 			lineCnt++;
 			for (int x = 2; x <= COLS - 2; x++)
 			{
@@ -307,8 +308,10 @@ void Game::RunWorld(bool& restart)
 	srand(time(NULL));
 	CreateWorld();
 
+	bool pause = false;
+
 	thread hotKeys([&]
-		{ HotKeys(); }
+		{ HotKeys(pause); }
 	);
 
 	PlaySound(MAKEINTRESOURCE(IDR_WAVE1), NULL, SND_RESOURCE | SND_ASYNC);

@@ -7,7 +7,7 @@ private:
 
     wd wData;
 
-    bool worldIsRun = true, pause = false, pressed = false;
+    bool worldIsRun = true, pressed = false;
 
     vector <GameObject*> allGameObjects;
     vector <Shape*> shapeList;
@@ -122,7 +122,7 @@ public:
 
     void DrawToMem();
 
-    void HotKeys();
+    void HotKeys(bool& pause);
 
     bool GameOver();
 
