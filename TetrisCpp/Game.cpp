@@ -40,23 +40,61 @@ bool Game::GameOver()
 	return worldIsRun;
 }
 
+void Game::MergeLine(int &lineCnt)
+{
+	bool restart = true;
+
+	for (int shape = 0; shape < shapeList.size();)
+	{
+		if (restart) shape = 0;
+		else shape++;
+
+		if (shape == shapeList.size()) break;
+
+		if (shapeList[shape]->deleteShape) {
+			shapeList.erase(shapeList.begin() + shape);
+			allGameObjects.erase(allGameObjects.begin() + shape);
+
+			restart = true;
+		}
+		else restart = false;
+	}
+
+	for (int i = 0; i < lineCnt; i++)
+	{
+		for (int shape = 0; shape < shapeList.size(); shape++)
+		{
+			for (int coord = 0; coord < shapeList[shape]->shapesCoord.size(); coord++)
+			{
+				if (((wData.vBuf[shapeList[shape]->shapesCoord[coord].first][shapeList[shape]->shapesCoord[coord].second + 1] == u' ') ||
+					(wData.vBuf[shapeList[shape]->shapesCoord[coord].first][shapeList[shape]->shapesCoord[coord].second + 1] == 0)) &&
+					shapeList[shape]->shapesCoord[coord].second + 1 != ROWS) {
+					shapeList[shape]->EraseObject();
+					shapeList[shape]->shapesCoord[coord].second++;
+				}
+			}
+		}
+		score += 20;
+	}
+}
+
 void Game::DrawEndInfo(bool &restart)
 {
 	if (level == 5) {
-		SetPos(19, 22);
+		SetPos(11, 22);
 		cout << "CONGRATULATIONS! YOU WIN";
 	}
 	else {
-		SetPos(22, 22);
+		SetPos(11, 22);
 		cout << "GAME OVER!";
-		SetPos(24, 25);
+		SetPos(14, 25);
 		cout << "LEVEL: " << level + 1 << "/5";
 	}
-	SetPos(25, 24);
+	SetPos(13, 24);
 	cout << "SCORE: " << score;
-	SetPos(20, 27);
+	SetPos(10, 27);
 	cout << "PRESS ENTER TO RESTART";
-	SetPos(22, 28);
+	SetPos(12, 28);
 	cout << "PRESS ESC TO EXIT";
 
 	pressed = false;
@@ -118,44 +156,8 @@ void Game::ClearLine()
 	}
 
 	if (lineCnt > 0) {
-
-		bool restart = true;
-
-		for (int shape = 0; shape < shapeList.size();)
-		{
-			if (restart) shape = 0;
-			else shape++;
-
-			if (shape == shapeList.size()) break;
-
-			if (shapeList[shape]->deleteShape) {
-				shapeList.erase(shapeList.begin() + shape);
-				allGameObjects.erase(allGameObjects.begin() + shape);
-
-				restart = true;
-			}
-
-			else restart = false;
-		}
-
-		for (int i = 0; i < lineCnt; i++)
-		{
-			for (int shape = 0; shape < shapeList.size(); shape++)
-			{
-				for (int coord = 0; coord < shapeList[shape]->shapesCoord.size(); coord++)
-				{
-					if ((wData.vBuf[shapeList[shape]->shapesCoord[coord].first][shapeList[shape]->shapesCoord[coord].second + 1] == u' ') ||
-						(wData.vBuf[shapeList[shape]->shapesCoord[coord].first][shapeList[shape]->shapesCoord[coord].second + 1] == 0)) {
-						shapeList[shape]->EraseObject();
-						shapeList[shape]->shapesCoord[coord].second++;
-					}
-				}
-			}
-			score += 20;
-		}
-
+		MergeLine(lineCnt);
 	}
-	
 }
 
 void Game::Collision(Shape* shape, bool& clearLine, bool& collisionRight, bool& collisionLeft)
@@ -280,7 +282,7 @@ void Game::DrawArea()
 
 				if (0 != dwResourceSize)
 				{
-					for (int i = 0; i < strnlen(area, 7500); i++) {
+					for (int i = 0; i < strnlen(area, 2136); i++) {
 						cout << area[i];
 					}
 				}

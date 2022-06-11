@@ -2,7 +2,7 @@
 #include "stdfix.h"
 
 #define ROWS 50
-#define COLS 60
+#define COLS 31
 
 typedef struct wd {
 	int size_rows;

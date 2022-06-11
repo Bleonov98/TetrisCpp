@@ -80,7 +80,7 @@ private:
         }
 
         void SetScreenSize() {
-            int Width = 60, Height = 55, err = 30; // 100, 56
+            int Width = 31, Height = 55, err = 30; // 30, 56
 
             COORD monitorSize = { GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN) };
             COORD bufferSize = { Width, Height };
@@ -125,6 +125,8 @@ public:
     void HotKeys(bool& pause);
 
     bool GameOver();
+
+    void MergeLine(int &lineCnt);
 
     void DrawEndInfo(bool &restart);
 
