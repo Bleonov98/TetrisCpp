@@ -12,7 +12,7 @@ private:
     vector <GameObject*> allGameObjects;
     vector <Shape*> shapeList;
 
-    int score = 0, level;
+    int score = 0, level = 0;
 
     char16_t prevBuf[ROWS][COLS];
 
@@ -126,7 +126,7 @@ public:
 
     bool GameOver();
 
-    void MergeLine(int &lineCnt);
+    void MergeLine(vector <int> &lineErase);
 
     void DrawEndInfo(bool &restart);
 

@@ -32,7 +32,7 @@ bool Game::GameOver()
 
 	for (int shape = 0; shape < shapeList.size(); shape++)
 	{
-		if ((shapeList[shape]->ShapeIsDown()) && (shapeList[shape]->GetY() <= 10)) {
+		if ((shapeList[shape]->collisionBot) && (shapeList[shape]->GetY() <= 10)) {
 			worldIsRun = false;
 		}
 	}
@@ -40,7 +40,7 @@ bool Game::GameOver()
 	return worldIsRun;
 }
 
-void Game::MergeLine(int &lineCnt)
+void Game::MergeLine(vector <int>& lineErase)
 {
 	bool restart = true;
 
@@ -60,20 +60,28 @@ void Game::MergeLine(int &lineCnt)
 		else restart = false;
 	}
 
-	for (int i = 0; i < lineCnt; i++)
+	int line;
+
+	for (int i = 0; i < lineErase.size(); i++)
 	{
-		for (int shape = 0; shape < shapeList.size(); shape++)
+		auto minEl = min_element(lineErase.begin(), lineErase.end());
+		line = *minEl;
+
+		for (int shape = 0; shape < shapeList.size() - 1; shape++)
 		{
 			for (int coord = 0; coord < shapeList[shape]->shapesCoord.size(); coord++)
 			{
-				if (((wData.vBuf[shapeList[shape]->shapesCoord[coord].first][shapeList[shape]->shapesCoord[coord].second + 1] == u' ') ||
-					(wData.vBuf[shapeList[shape]->shapesCoord[coord].first][shapeList[shape]->shapesCoord[coord].second + 1] == 0)) &&
-					shapeList[shape]->shapesCoord[coord].second + 1 != ROWS) {
-					shapeList[shape]->EraseObject();
+				if (shapeList[shape]->shapesCoord[coord].second < line) {
+					wData.vBuf[shapeList[shape]->shapesCoord[coord].second][shapeList[shape]->shapesCoord[coord].first] = u' ';
 					shapeList[shape]->shapesCoord[coord].second++;
 				}
 			}
 		}
+		if (lineErase.size() > 1) {
+			lineErase.erase(minEl);
+			i = -1;
+		}
+		
 		score += 20;
 	}
 }
@@ -87,14 +95,14 @@ void Game::DrawEndInfo(bool &restart)
 	else {
 		SetPos(11, 22);
 		cout << "GAME OVER!";
-		SetPos(14, 25);
+		SetPos(11, 25);
 		cout << "LEVEL: " << level + 1 << "/5";
 	}
-	SetPos(13, 24);
+	SetPos(12, 24);
 	cout << "SCORE: " << score;
-	SetPos(10, 27);
+	SetPos(5, 27);
 	cout << "PRESS ENTER TO RESTART";
-	SetPos(12, 28);
+	SetPos(7, 28);
 	cout << "PRESS ESC TO EXIT";
 
 	pressed = false;
@@ -123,6 +131,10 @@ void Game::DrawInfo()
 void Game::ClearLine()
 {
 	vector<int> lineCounter(ROWS);
+
+	vector<int> lineErase;
+	lineErase.reserve(ROWS);
+
 	int lineCnt = 0;
 
 	for (int i = 0; i < ROWS; i++)
@@ -152,11 +164,12 @@ void Game::ClearLine()
 			{
 				shapeList[shape]->DeleteCoord();
 			}
+			lineErase.push_back(i);
 		}
 	}
 
 	if (lineCnt > 0) {
-		MergeLine(lineCnt);
+		MergeLine(lineErase);
 	}
 }
 
