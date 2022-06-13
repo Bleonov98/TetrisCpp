@@ -1,8 +1,8 @@
 #pragma once
 #include "stdfix.h"
 
-#define ROWS 40
-#define COLS 31
+#define ROWS 30
+#define COLS 21
 
 typedef struct wd {
 	int size_rows;

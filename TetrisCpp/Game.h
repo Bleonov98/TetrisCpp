@@ -81,7 +81,7 @@ private:
         }
 
         void SetScreenSize() {
-            int Width = 61, Height = 45, err = 30; // 30, 56
+            int Width = 51, Height = 32, err = 30; // 30, 56
 
             COORD monitorSize = { GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN) };
             COORD bufferSize = { Width, Height };

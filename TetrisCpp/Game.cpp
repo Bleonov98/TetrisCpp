@@ -52,19 +52,23 @@ void Game::ShapePreview()
 
 bool Game::GameOver()
 {
-	if ((score % 260 == 0) && (score > 0)) {
-		if (level <= 4) {
-			level++;
-			score += 20;
+	while (worldIsRun) {
+		if ((score % 260 == 0) && (score > 0)) {
+			if (level <= 4) {
+				level++;
+				score += 20;
+			}
 		}
-	}
-	if (level == 5) worldIsRun = false;
+		if (level == 5) worldIsRun = false;
 
-	for (int shape = 0; shape < shapeList.size(); shape++)
-	{
-		if ((shapeList[shape]->collisionBot) && (shapeList[shape]->GetY() <= 5)) {
-			worldIsRun = false;
+		for (int shape = 0; shape < shapeList.size(); shape++)
+		{
+			if ((shapeList[shape]->collisionBot) && (shapeList[shape]->GetY() <= 5)) {
+				worldIsRun = false;
+			}
 		}
+		
+		this_thread::sleep_for(milliseconds(1));
 	}
 
 	return worldIsRun;
@@ -119,20 +123,20 @@ void Game::MergeLine(vector <int>& lineErase)
 void Game::DrawEndInfo(bool &restart)
 {
 	if (level == 5) {
-		SetPos(11, 22);
+		SetPos(31, 17);
 		cout << "CONGRATULATIONS! YOU WIN";
 	}
 	else {
-		SetPos(11, 22);
+		SetPos(31, 17);
 		cout << "GAME OVER!";
-		SetPos(11, 25);
+		SetPos(31, 20);
 		cout << "LEVEL: " << level + 1 << "/5";
 	}
-	SetPos(12, 24);
+	SetPos(32, 19);
 	cout << "SCORE: " << score;
-	SetPos(5, 27);
+	SetPos(25, 22);
 	cout << "PRESS ENTER TO RESTART";
-	SetPos(7, 28);
+	SetPos(27, 23);
 	cout << "PRESS ESC TO EXIT";
 
 	pressed = false;
@@ -363,6 +367,10 @@ void Game::RunWorld(bool& restart)
 		{ HotKeys(pause); }
 	);
 
+	thread gameOver([&]
+		{ GameOver(); }
+	);
+
 	PlaySound(MAKEINTRESOURCE(IDR_WAVE1), NULL, SND_RESOURCE | SND_ASYNC);
 
 	Shape* shape = new Shape(&wData, 10 + rand() % (COLS - 20), 2, rand() % 7, 1, 1 + rand() % 5);
@@ -460,13 +468,12 @@ void Game::RunWorld(bool& restart)
 		DrawInfo();
 
 		Sleep(40);
-
-		GameOver();
 	}
 
 	DrawEndInfo(restart);
 
 	hotKeys.join();
+	gameOver.join();
 
 	printf(CSI "?1049l");
 }
