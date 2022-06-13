@@ -8,6 +8,8 @@ class GameObject
 {
 public:
 
+	GameObject() {};
+
 	GameObject(wd* wData, int x, int y, int color, int speed, int type) {
 		_x = x, _y = y, _color = color, _speed = speed, _type = type;
 		_wData = wData;
@@ -27,9 +29,15 @@ public:
 
 	void EraseObject();
 
-	bool deleteShape = false;
+	vector<char16_t> GetType(int type);
 
 	vector <pair<int, int>> shapesCoord;
+
+	virtual ~GameObject() {
+		delete this;
+	};
+
+	bool deleteShape = false;
 
 protected:
 
@@ -67,15 +75,15 @@ protected:
 			},
 
 			{
+			u"   ",
 			u"###",
-			u"#  ",
-			u"   "
+			u"#  "
 			},
 
 			{
-			u" ##",
-			u"  #",
-			u"  #"
+			u"## ",
+			u" # ",
+			u" # "
 			},
 
 			{
@@ -86,25 +94,25 @@ protected:
 		},
 		{
 			{
-			u"###",
-			u"###",
-			u"###"
-			},
-
-			{
-			u"###",
+			u"   ",
 			u"###",
 			u"###"
 			},
 
 			{
-			u"###",
+			u"   ",
 			u"###",
 			u"###"
 			},
 
 			{
+			u"   ",
 			u"###",
+			u"###"
+			},
+
+			{
+			u"   ",
 			u"###",
 			u"###"
 			},
@@ -117,9 +125,9 @@ protected:
 			},
 
 			{
-			u" # ",
-			u" ##",
-			u" # "
+			u"#  ",
+			u"## ",
+			u"#  "
 			},
 
 			{
@@ -129,9 +137,9 @@ protected:
 			},
 
 			{
-			u"  #",
-			u" ##",
-			u"  #"
+			u" # ",
+			u"## ",
+			u" # "
 			},
 		},
 		{
@@ -142,9 +150,9 @@ protected:
 			},
 
 			{
-			u" # ",
-			u" ##",
-			u"  #"
+			u"#  ",
+			u"## ",
+			u" # "
 			},
 
 			{
@@ -154,9 +162,9 @@ protected:
 			},
 
 			{
-			u"  #",
-			u" ##",
-			u" # "
+			u" # ",
+			u"## ",
+			u"#  "
 			},
 		},
 	};
@@ -164,10 +172,7 @@ protected:
 	wd* _wData;
 
 	int _x, _y, _color, _speed, _type, _pos = 0;
-
-	virtual ~GameObject() {
-		delete this;
-	};
+	
 };
 
 class Shape : public GameObject 

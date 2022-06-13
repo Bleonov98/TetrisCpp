@@ -1,7 +1,7 @@
 #pragma once
 #include "stdfix.h"
 
-#define ROWS 50
+#define ROWS 40
 #define COLS 31
 
 typedef struct wd {

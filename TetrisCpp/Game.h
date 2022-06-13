@@ -13,7 +13,8 @@ private:
     vector <Shape*> shapeList;
 
     int score = 0, level = 0;
-
+    int nextShape = 0;
+    
     char16_t prevBuf[ROWS][COLS];
 
     char coord[50];
@@ -80,7 +81,7 @@ private:
         }
 
         void SetScreenSize() {
-            int Width = 31, Height = 55, err = 30; // 30, 56
+            int Width = 61, Height = 45, err = 30; // 30, 56
 
             COORD monitorSize = { GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN) };
             COORD bufferSize = { Width, Height };
@@ -123,6 +124,8 @@ public:
     void DrawToMem();
 
     void HotKeys(bool& pause);
+
+    void ShapePreview();
 
     bool GameOver();
 

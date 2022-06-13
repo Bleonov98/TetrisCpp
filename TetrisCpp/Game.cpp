@@ -20,6 +20,36 @@ void Game::HotKeys(bool &pause)
 	}
 }
 
+void Game::ShapePreview()
+{
+	GameObject* gmObj = new GameObject;
+
+	nextShape = 1 + rand() % 5;
+
+	for (int i = 0; i < SHAPE_HEIGHT; i++)
+	{
+		for (int j = 0; j < SHAPE_WIDTH - 1; j++)
+		{
+			SetPos(COLS + 23 + j, 2 + i);
+			cout << ' ';
+		}
+	}
+
+	vector<char16_t> sprite = gmObj->GetType(nextShape - 1);
+
+	int n = 0;
+
+	for (int i = 0; i < SHAPE_HEIGHT; i++)
+	{
+		for (int j = 0; j < SHAPE_WIDTH - 1; j++)
+		{
+			SetPos(COLS + 23 + j, 2 + i);
+			cout << char(sprite[n]);
+			n++;
+		}
+	}
+}
+
 bool Game::GameOver()
 {
 	if ((score % 260 == 0) && (score > 0)) {
@@ -32,7 +62,7 @@ bool Game::GameOver()
 
 	for (int shape = 0; shape < shapeList.size(); shape++)
 	{
-		if ((shapeList[shape]->collisionBot) && (shapeList[shape]->GetY() <= 10)) {
+		if ((shapeList[shape]->collisionBot) && (shapeList[shape]->GetY() <= 5)) {
 			worldIsRun = false;
 		}
 	}
@@ -122,9 +152,9 @@ void Game::DrawEndInfo(bool &restart)
 
 void Game::DrawInfo()
 {
-	SetPos(8, 52);
+	SetPos(COLS + 10, 2);
 	cout << score;
-	SetPos(8, 53);
+	SetPos(COLS + 10, 4);
 	cout << level + 1;
 }
 
@@ -177,9 +207,11 @@ void Game::Collision(Shape* shape, bool& clearLine, bool& collisionRight, bool& 
 {
 	if (shapeList.back()->ShapeIsDown()) {
 
-		shape = new Shape(&wData, 10 + rand() % (COLS - 20), 2, rand() % 7, 1, 1 + rand() % 5);
+		shape = new Shape(&wData, 10 + rand() % (COLS - 20), 2, rand() % 7, 1, nextShape);
 		shapeList.push_back(shape);
 		allGameObjects.push_back(shape);
+
+		ShapePreview();
 
 		clearLine = true;
 
@@ -238,9 +270,11 @@ void Game::Collision(Shape* shape, bool& clearLine, bool& collisionRight, bool& 
 
 					shapeList.back()->collisionBot = true;
 
-					shape = new Shape(&wData, 10 + rand() % (COLS - 20), 2, rand() % 7, 1, 1 + rand() % 5);
+					shape = new Shape(&wData, 10 + rand() % (COLS - 20), 2, rand() % 7, 1, nextShape);
 					shapeList.push_back(shape);
 					allGameObjects.push_back(shape);
+
+					ShapePreview();
 
 					finded = true;
 					clearLine = true;
@@ -295,7 +329,7 @@ void Game::DrawArea()
 
 				if (0 != dwResourceSize)
 				{
-					for (int i = 0; i < strnlen(area, 2136); i++) {
+					for (int i = 0; i < strnlen(area, 2192); i++) {
 						cout << area[i];
 					}
 				}
@@ -334,6 +368,7 @@ void Game::RunWorld(bool& restart)
 	Shape* shape = new Shape(&wData, 10 + rand() % (COLS - 20), 2, rand() % 7, 1, 1 + rand() % 5);
 	shapeList.push_back(shape);
 	allGameObjects.push_back(shape);
+	ShapePreview();
 
 	level = 0;
 	score = 0;

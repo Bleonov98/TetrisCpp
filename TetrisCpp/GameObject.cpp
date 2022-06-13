@@ -32,6 +32,21 @@ void GameObject::EraseObject()
 	}
 }
 
+vector<char16_t> GameObject::GetType(int type)
+{
+	vector<char16_t> sprite;
+
+	for (int i = 0; i < SHAPE_HEIGHT; i++)
+	{
+		for (int j = 0; j < SHAPE_WIDTH - 1; j++)
+		{
+			sprite.push_back(shapeSprite[type][0][i][j]);
+		}
+	}
+	
+	return sprite;
+}
+
 bool Shape::ShapeIsDown()
 {
 	return _alreadyDown;
@@ -64,7 +79,7 @@ void Shape::MoveShape(bool collisionLeft, bool collisionRight, int lvl)
 
 		if (tick % 3 == 0) {
 			if (GetAsyncKeyState(VK_SPACE)) {
-				if (GetLeft() >= SHAPE_WIDTH && GetRight() <= COLS - SHAPE_WIDTH) RotateShape();
+				if (GetLeft() >= SHAPE_WIDTH - 1 && GetRight() <= COLS - SHAPE_WIDTH) RotateShape();
 			}
 		}
 
