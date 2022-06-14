@@ -44,10 +44,25 @@ void Game::ShapePreview()
 		for (int j = 0; j < SHAPE_WIDTH - 1; j++)
 		{
 			SetPos(COLS + 23 + j, 2 + i);
+
+			if (sprite[n] == u'#') printf(CSI "47;37m");
 			cout << char(sprite[n]);
+			printf(CSI "0m");
 			n++;
 		}
 	}
+}
+
+void Game::GoNewShape(Shape* shape)
+{
+	shape = new Shape(&wData, 10 + rand() % (COLS - 20), 2, 1 + rand() % 7, 1, nextShape);
+
+	shapeList.push_back(shape);
+	allGameObjects.push_back(shape);
+
+	ShapePreview();
+
+	ready = false;
 }
 
 bool Game::GameOver()
@@ -72,6 +87,19 @@ bool Game::GameOver()
 	}
 
 	return worldIsRun;
+}
+
+void Game::ShapeIsReady()
+{
+	checkCollision = false;
+
+	for (int i = 0; i < 1; i++)
+	{
+		this_thread::sleep_for(milliseconds(200));
+	}
+
+	shapeList.back()->collisionBot == true ? ready = true: ready = false;
+	checkCollision = true;
 }
 
 void Game::MergeLine(vector <int>& lineErase)
@@ -207,22 +235,8 @@ void Game::ClearLine()
 	}
 }
 
-void Game::Collision(Shape* shape, bool& clearLine, bool& collisionRight, bool& collisionLeft)
+void Game::Collision(bool& clearLine, bool& collisionRight, bool& collisionLeft)
 {
-	if (shapeList.back()->ShapeIsDown()) {
-
-		shape = new Shape(&wData, 10 + rand() % (COLS - 20), 2, rand() % 7, 1, nextShape);
-		shapeList.push_back(shape);
-		allGameObjects.push_back(shape);
-
-		ShapePreview();
-
-		clearLine = true;
-
-		return;
-	}
-
-	// !------------------
 	for (int i = 0; i < shapeList.size() - 1; i++)
 	{
 		bool finded = false;
@@ -232,37 +246,53 @@ void Game::Collision(Shape* shape, bool& clearLine, bool& collisionRight, bool& 
 
 			for (int size = 0; size < shapeList.back()->shapesCoord.size(); size++)
 			{
-
-				if (
-					(((shapeList.back()->shapesCoord[size].first == shapeList[i]->shapesCoord[j].first - 1) &&
+				if (!collisionRight) {
+					if (
+						(((shapeList.back()->shapesCoord[size].first == shapeList[i]->shapesCoord[j].first - 1) &&
+							(shapeList.back()->shapesCoord[size].second + 1 == shapeList[i]->shapesCoord[j].second)) ||
+							((shapeList.back()->shapesCoord[size].first == shapeList[i]->shapesCoord[j].first - 1) &&
+								(shapeList.back()->shapesCoord[size].second == shapeList[i]->shapesCoord[j].second)))
+						)
+					{
+						collisionRight = true;
+					}
+				}
+				
+				if (!collisionLeft) {
+					if (((shapeList.back()->shapesCoord[size].first == shapeList[i]->shapesCoord[j].first + 1) &&
 						(shapeList.back()->shapesCoord[size].second + 1 == shapeList[i]->shapesCoord[j].second)) ||
-						((shapeList.back()->shapesCoord[size].first == shapeList[i]->shapesCoord[j].first - 1) &&
+						((shapeList.back()->shapesCoord[size].first == shapeList[i]->shapesCoord[j].first + 1) &&
 							(shapeList.back()->shapesCoord[size].second == shapeList[i]->shapesCoord[j].second)))
-					)
-				{
-					collisionRight = true;
-					finded = true;
+					{
+						collisionLeft = true;
+					}
 				}
-
-				if (((shapeList.back()->shapesCoord[size].first == shapeList[i]->shapesCoord[j].first + 1) &&
-					(shapeList.back()->shapesCoord[size].second + 1 == shapeList[i]->shapesCoord[j].second)) ||
-					((shapeList.back()->shapesCoord[size].first == shapeList[i]->shapesCoord[j].first + 1) &&
-						(shapeList.back()->shapesCoord[size].second == shapeList[i]->shapesCoord[j].second)))
-				{
-					collisionLeft = true;
-					finded = true;
-				}
-
-				if (finded) break;
 			}
-			if (finded) break;
 		}
-		if (finded) break;
 	}
+
+	// Side collision with objects
+
+	if (shapeList.back()->ShapeIsDown()) {
+
+		if (checkCollision) {
+			thread readyShape([&]
+				{ ShapeIsReady(); }
+			);
+			readyShape.detach();
+		} 
+
+		shapeList.back()->collisionBot = true;
+
+		clearLine = true;
+
+		return;
+	}
+
+	// Bottom collision with area
 
 	for (int i = 0; i < shapeList.size() - 1; i++)
 	{
-		bool finded = false;
 
 		for (int j = 0; j < shapeList[i]->shapesCoord.size(); j++)
 		{
@@ -274,23 +304,17 @@ void Game::Collision(Shape* shape, bool& clearLine, bool& collisionRight, bool& 
 
 					shapeList.back()->collisionBot = true;
 
-					shape = new Shape(&wData, 10 + rand() % (COLS - 20), 2, rand() % 7, 1, nextShape);
-					shapeList.push_back(shape);
-					allGameObjects.push_back(shape);
-
-					ShapePreview();
-
-					finded = true;
+					if (checkCollision) {
+						thread readyShape([&]
+							{ ShapeIsReady(); }
+						);
+						readyShape.detach();
+					}
 					clearLine = true;
 
-					if (finded) break;
 				}
 			}
-
-			if (finded) break;
 		}
-
-		if (finded) break;
 	}
 }
 
@@ -373,7 +397,7 @@ void Game::RunWorld(bool& restart)
 
 	PlaySound(MAKEINTRESOURCE(IDR_WAVE1), NULL, SND_RESOURCE | SND_ASYNC);
 
-	Shape* shape = new Shape(&wData, 10 + rand() % (COLS - 20), 2, rand() % 7, 1, 1 + rand() % 5);
+	Shape* shape = new Shape(&wData, 10 + rand() % (COLS - 20), 2, 1 + rand() % 7, 1, 1 + rand() % 5);
 	shapeList.push_back(shape);
 	allGameObjects.push_back(shape);
 	ShapePreview();
@@ -402,19 +426,15 @@ void Game::RunWorld(bool& restart)
 
 		}
 
-		for (int i = 0; i < shapeList.size(); i++)
-		{
-			if (!shapeList[i]->collisionBot) {
-
-				shapeList[i]->MoveShape(collisionLeft, collisionRight, level);
-			}
-		}
+		shapeList.back()->MoveShape(collisionLeft, collisionRight, level, ready);
 		// -> MoveShape function
 
 		collisionRight = false;
 		collisionLeft = false;
 
-		Collision(shape, clearLine, collisionRight, collisionLeft);
+		Collision(clearLine, collisionRight, collisionLeft);
+
+		if (ready) GoNewShape(shape);
 
 		DrawToMem();
 
@@ -436,27 +456,28 @@ void Game::RunWorld(bool& restart)
 
 					SetPos(x, y);
 
-					if ((prevBuf[y][x] >> 8) == FOREGROUND_RED) {
-						printf(CSI "22;31m");
+					if ((prevBuf[y][x] >> 8) == Red) {
+						printf(CSI "41;31m");
 					}
-					else if ((prevBuf[y][x] >> 8) == FOREGROUND_GREEN) {
-						printf(CSI "22;32m");
+					else if ((prevBuf[y][x] >> 8) == Green) {
+						printf(CSI "42;32m");
 					}
-					else if ((prevBuf[y][x] >> 8) == FOREGROUND_BLUE) {
-						printf(CSI "22;34m");
+					else if ((prevBuf[y][x] >> 8) == Blue) {
+						printf(CSI "44;34m");
 					}
-					else if ((prevBuf[y][x] >> 8) == (FOREGROUND_RED | FOREGROUND_GREEN)) {
-						printf(CSI "22;33m");
+					else if ((prevBuf[y][x] >> 8) == Yellow) {
+						printf(CSI "43;33m");
 					}
-					else if ((prevBuf[y][x] >> 8) == (FOREGROUND_RED | FOREGROUND_BLUE)) {
-						printf(CSI "22;35m");
+					else if ((prevBuf[y][x] >> 8) == Purple) {
+						printf(CSI "45;35m");
 					}
-					else if ((prevBuf[y][x] >> 8) == (FOREGROUND_GREEN | FOREGROUND_BLUE)) {
-						printf(CSI "22;36m");
+					else if ((prevBuf[y][x] >> 8) == Cyan) {
+						printf(CSI "46;36m");
 					}
-					else {
-						printf(CSI "22;37m");
+					else if ((prevBuf[y][x] >> 8) == White) {
+						printf(CSI "47;37m");
 					}
+					else printf(CSI "0;0m");
 
 					cout << char(prevBuf[y][x]);
 

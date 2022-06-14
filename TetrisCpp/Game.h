@@ -7,7 +7,7 @@ private:
 
     wd wData;
 
-    bool worldIsRun = true, pressed = false;
+    bool worldIsRun = true, pressed = false, ready = false, checkCollision = true;
 
     vector <GameObject*> allGameObjects;
     vector <Shape*> shapeList;
@@ -18,6 +18,16 @@ private:
     char16_t prevBuf[ROWS][COLS];
 
     char coord[50];
+
+    enum colors {
+        White = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE,
+        Red = FOREGROUND_RED,
+        Green = FOREGROUND_GREEN,
+        Blue = FOREGROUND_BLUE,
+        Cyan = FOREGROUND_GREEN | FOREGROUND_BLUE,
+        Purple = FOREGROUND_RED | FOREGROUND_BLUE,
+        Yellow = FOREGROUND_RED | FOREGROUND_GREEN
+    };
 
     HINSTANCE hInstance;
 
@@ -119,15 +129,19 @@ public:
 
     void RunWorld(bool& restart);
 
-    void Collision(Shape *shape, bool &clearLine, bool &collisionRight, bool &collisionLeft);
+    void Collision(bool &clearLine, bool &collisionRight, bool &collisionLeft);
 
     void DrawToMem();
 
     void HotKeys(bool& pause);
 
     void ShapePreview();
+    
+    void GoNewShape(Shape* shape);
 
     bool GameOver();
+
+    void ShapeIsReady();
 
     void MergeLine(vector <int> &lineErase);
 

@@ -95,26 +95,26 @@ protected:
 		{
 			{
 			u"   ",
-			u"###",
-			u"###"
+			u"## ",
+			u"## "
 			},
 
 			{
 			u"   ",
-			u"###",
-			u"###"
+			u"## ",
+			u"## "
 			},
 
 			{
 			u"   ",
-			u"###",
-			u"###"
+			u"## ",
+			u"## "
 			},
 
 			{
 			u"   ",
-			u"###",
-			u"###"
+			u"## ",
+			u"## "
 			},
 		},
 		{
@@ -181,8 +181,6 @@ private:
 
 	int tick, speedY = 6;
 
-	bool _alreadyDown = false;
-
 	void RotateShape();
 
 	void FillCoord();
@@ -202,7 +200,7 @@ public:
 
 	bool ShapeIsDown();
 
-	void MoveShape(bool collisionLeft, bool collisionRight, int lvl);
+	void MoveShape(bool collisionLeft, bool collisionRight, int lvl, bool ready);
 
 	void DeleteCoord();
 };

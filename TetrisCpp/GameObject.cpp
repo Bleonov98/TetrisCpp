@@ -49,41 +49,18 @@ vector<char16_t> GameObject::GetType(int type)
 
 bool Shape::ShapeIsDown()
 {
-	return _alreadyDown;
+	return collisionBot;
 }
 
-void Shape::MoveShape(bool collisionLeft, bool collisionRight, int lvl)
+void Shape::MoveShape(bool collisionLeft, bool collisionRight, int lvl, bool ready)
 {
 	if (shapesCoord.back().second == ROWS - 1) {
-		_alreadyDown = true;
+		collisionBot = true;
 	}
 
-	if (collisionBot) {
-		_alreadyDown = true;
-	}
+	EraseObject();
 
-	if (!_alreadyDown) {
-
-		EraseObject();
-
-		if (GetAsyncKeyState(VK_RIGHT)) {
-			if ((GetRight() <= COLS - 3) && (!collisionRight)) {
-				_x += _speed;
-			}
-		}
-		else if (GetAsyncKeyState(VK_LEFT)) {
-			if ((GetLeft() >= 3) && (!collisionLeft)) {
-				_x -= _speed;
-			}
-		}
-
-		if (tick % 3 == 0) {
-			if (GetAsyncKeyState(VK_SPACE)) {
-				if (GetLeft() >= SHAPE_WIDTH - 1 && GetRight() <= COLS - SHAPE_WIDTH) RotateShape();
-			}
-		}
-
-
+	if (!collisionBot) {
 		if (GetAsyncKeyState(VK_DOWN) & 0x8000) {
 			speedY = 1;
 		}
@@ -98,10 +75,35 @@ void Shape::MoveShape(bool collisionLeft, bool collisionRight, int lvl)
 			_y += _speed;
 		}
 
-		FillCoord();
+		if (tick % 3 == 0) {
+			if (GetAsyncKeyState(VK_SPACE)) {
+				if (GetLeft() >= (SHAPE_WIDTH - 2) && GetRight() <= COLS - (SHAPE_WIDTH - 2)) RotateShape();
+
+				if (GetRight() >= COLS - 2) {
+					do
+					{
+						_x--;
+					} while (_x >= COLS - (SHAPE_WIDTH - 1));
+				};
+			}
+		}
 	}
 
+	if (!ready) {
+
+		if (GetAsyncKeyState(VK_RIGHT)) {
+			if ((GetRight() <= COLS - 3) && (!collisionRight)) {
+				_x += _speed;
+			}
+		}
+		else if (GetAsyncKeyState(VK_LEFT)) {
+			if ((GetLeft() >= 3) && (!collisionLeft)) {
+				_x -= _speed;
+			}
+		}
+	}
 	
+	FillCoord();
 
 	tick++;
 }
