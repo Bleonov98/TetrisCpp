@@ -60,6 +60,8 @@ void Game::GoNewShape(Shape* shape)
 	shapeList.push_back(shape);
 	allGameObjects.push_back(shape);
 
+	ch = true;
+
 	ShapePreview();
 
 	ready = false;
@@ -98,7 +100,8 @@ void Game::ShapeIsReady()
 		this_thread::sleep_for(milliseconds(250));
 	}
 
-	shapeList.back()->collisionBot ? ready = true: ready = false;
+	shapeList.back()->collisionBot ? ready = true : ready = false;
+
 	checkCollision = true;
 }
 
@@ -289,7 +292,14 @@ void Game::CollisionBot()
 					(shapeList[i]->shapesCoord[j].second - 1 == shapeList.back()->shapesCoord[size].second)) {
 
 					shapeList.back()->collisionBot = true;
-					ready = true;
+					
+
+					if (checkCollision) {
+						thread readyShape([&]
+							{ ShapeIsReady(); }
+						);
+						readyShape.detach();
+					}
 
 					clearLine = true;
 				}
@@ -432,10 +442,11 @@ void Game::RunWorld(bool& restart)
 
 		DrawToMem();
 
-		if (clearLine) {
+		if (clearLine && ch) {
 			ClearLine();
 
 			clearLine = false;
+			ch = false;
 		}
 
 		for (int y = 0; y < ROWS; y++)

@@ -75,6 +75,7 @@ void Shape::MoveShape(bool collisionLeft, bool collisionRight, int lvl, bool rea
 			_y += _speed;
 		}
 
+
 		if (tick % 3 == 0) {
 			if (GetAsyncKeyState(VK_SPACE)) {
 				if (GetLeft() >= (SHAPE_WIDTH - 2) && GetRight() <= COLS - (SHAPE_WIDTH - 2)) RotateShape();
@@ -88,6 +89,8 @@ void Shape::MoveShape(bool collisionLeft, bool collisionRight, int lvl, bool rea
 			}
 		}
 	}
+
+	if (shapesCoord.back().second != ROWS - 1) collisionBot = false;
 
 	if (!ready) {
 
