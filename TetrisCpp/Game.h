@@ -7,7 +7,7 @@ private:
 
     wd wData;
 
-    bool worldIsRun = true, pressed = false, ready = false, checkCollision = true;
+    bool worldIsRun = true, pressed = false, ready = false, checkCollision = true, clearLine = false, ch = false;
 
     vector <GameObject*> allGameObjects;
     vector <Shape*> shapeList;
@@ -129,7 +129,9 @@ public:
 
     void RunWorld(bool& restart);
 
-    void Collision(bool &clearLine, bool &collisionRight, bool &collisionLeft);
+    void CollisionSide(bool &collisionRight, bool &collisionLeft);
+
+    void CollisionBot();
 
     void DrawToMem();
 

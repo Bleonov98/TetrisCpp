@@ -95,10 +95,10 @@ void Game::ShapeIsReady()
 
 	for (int i = 0; i < 1; i++)
 	{
-		this_thread::sleep_for(milliseconds(200));
+		this_thread::sleep_for(milliseconds(250));
 	}
 
-	shapeList.back()->collisionBot == true ? ready = true: ready = false;
+	shapeList.back()->collisionBot ? ready = true: ready = false;
 	checkCollision = true;
 }
 
@@ -235,7 +235,7 @@ void Game::ClearLine()
 	}
 }
 
-void Game::Collision(bool& clearLine, bool& collisionRight, bool& collisionLeft)
+void Game::CollisionSide(bool& collisionRight, bool& collisionLeft)
 {
 	for (int i = 0; i < shapeList.size() - 1; i++)
 	{
@@ -272,24 +272,10 @@ void Game::Collision(bool& clearLine, bool& collisionRight, bool& collisionLeft)
 	}
 
 	// Side collision with objects
+}
 
-	if (shapeList.back()->ShapeIsDown()) {
-
-		if (checkCollision) {
-			thread readyShape([&]
-				{ ShapeIsReady(); }
-			);
-			readyShape.detach();
-		} 
-
-		shapeList.back()->collisionBot = true;
-
-		clearLine = true;
-
-		return;
-	}
-
-	// Bottom collision with area
+void Game::CollisionBot()
+{
 
 	for (int i = 0; i < shapeList.size() - 1; i++)
 	{
@@ -303,15 +289,9 @@ void Game::Collision(bool& clearLine, bool& collisionRight, bool& collisionLeft)
 					(shapeList[i]->shapesCoord[j].second - 1 == shapeList.back()->shapesCoord[size].second)) {
 
 					shapeList.back()->collisionBot = true;
+					ready = true;
 
-					if (checkCollision) {
-						thread readyShape([&]
-							{ ShapeIsReady(); }
-						);
-						readyShape.detach();
-					}
 					clearLine = true;
-
 				}
 			}
 		}
@@ -408,8 +388,6 @@ void Game::RunWorld(bool& restart)
 	bool collisionLeft = false;
 	bool collisionRight = false;
 
-	bool clearLine = false;
-
 	while (worldIsRun) {
 
 		if (pause) {
@@ -429,10 +407,26 @@ void Game::RunWorld(bool& restart)
 		shapeList.back()->MoveShape(collisionLeft, collisionRight, level, ready);
 		// -> MoveShape function
 
+		if (shapeList.back()->ShapeIsDown()) {
+
+			if (checkCollision) {
+				thread readyShape([&]
+					{ ShapeIsReady(); }
+				);
+				readyShape.detach();
+			}
+
+			shapeList.back()->collisionBot = true;
+
+			clearLine = true;
+		}
+
 		collisionRight = false;
 		collisionLeft = false;
 
-		Collision(clearLine, collisionRight, collisionLeft);
+		CollisionSide(collisionRight, collisionLeft);
+
+		CollisionBot();
 
 		if (ready) GoNewShape(shape);
 
