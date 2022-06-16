@@ -66,7 +66,7 @@ void Shape::MoveShape(bool collisionLeft, bool collisionRight, int lvl, bool rea
 		}
 		else {
 			speedY = 6;
-			if (lvl >= 3) {
+			if (lvl >= 4) {
 				speedY = 3;
 			}
 		}

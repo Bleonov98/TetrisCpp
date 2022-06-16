@@ -70,13 +70,6 @@ void Game::GoNewShape(Shape* shape)
 bool Game::GameOver()
 {
 	while (worldIsRun) {
-		if ((score % 260 == 0) && (score > 0)) {
-			if (level <= 4) {
-				level++;
-				score += 20;
-			}
-		}
-		if (level == 5) worldIsRun = false;
 
 		for (int shape = 0; shape < shapeList.size(); shape++)
 		{
@@ -148,13 +141,21 @@ void Game::MergeLine(vector <int>& lineErase)
 		}
 		
 		score += 20;
+
+		if ((score % 260 == 0) && (score > 0)) {
+			if (level <= 4) {
+				level++;
+				score += 20;
+			}
+		}
+		if (level == 5) worldIsRun = false;
 	}
 }
 
 void Game::DrawEndInfo(bool &restart)
 {
 	if (level == 5) {
-		SetPos(31, 17);
+		SetPos(COLS + 3, 17);
 		cout << "CONGRATULATIONS! YOU WIN";
 	}
 	else {
@@ -242,11 +243,9 @@ void Game::CollisionSide(bool& collisionRight, bool& collisionLeft)
 {
 	for (int i = 0; i < shapeList.size() - 1; i++)
 	{
-		bool finded = false;
 
-		for (int j = 0; j < shapeList[i]->shapesCoord.size(); j++) {
-
-
+		for (int j = 0; j < shapeList[i]->shapesCoord.size(); j++) 
+		{
 			for (int size = 0; size < shapeList.back()->shapesCoord.size(); size++)
 			{
 				if (!collisionRight) {
@@ -292,7 +291,6 @@ void Game::CollisionBot()
 					(shapeList[i]->shapesCoord[j].second - 1 == shapeList.back()->shapesCoord[size].second)) {
 
 					shapeList.back()->collisionBot = true;
-					
 
 					if (checkCollision) {
 						thread readyShape([&]
@@ -493,7 +491,7 @@ void Game::RunWorld(bool& restart)
 
 		DrawInfo();
 
-		Sleep(40);
+		Sleep(70 - level * 10);
 	}
 
 	DrawEndInfo(restart);
