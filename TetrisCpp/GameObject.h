@@ -191,7 +191,6 @@ public:
 
 	Shape(wd* wData, int x, int y, int color, int speed, int type) : GameObject(wData, x, y, color, speed, type) {
 		FillCoord();
-		DrawObject();
 	};
 
 	int GetRight();
